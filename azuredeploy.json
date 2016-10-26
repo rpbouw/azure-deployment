@@ -10,14 +10,14 @@
     },
     "adminUserName": {
       "type": "string",
-      "defaultValue": "azureuser",
+      "defaultValue": "rene",
       "metadata": {
         "description": "User name for the Virtual Machine. Pick a valid username otherwise there will be a BadRequest error."
       }
     },
     "imagePublisher": {
       "type": "string",
-      "defaultValue": "openlogic",
+      "defaultValue": "openlCanonicalogic",
       "allowedValues": [
         "Canonical",
         "openlogic"
@@ -28,7 +28,7 @@
     },
     "imageOffer": {
       "type": "string",
-      "defaultValue": "CentOS",
+      "defaultValue": "UbuntuServer",
       "allowedValues": [
         "CentOS",
         "UbuntuServer"
@@ -39,7 +39,7 @@
     },
     "imageSku": {
       "type": "string",
-      "defaultValue": "7.2",
+      "defaultValue": "16.04.0-LTS",
       "allowedValues": [
         "16.04.0-LTS",
         "6.5",
@@ -175,18 +175,14 @@
     },
     "dataDiskSize": {
       "type": "int",
-      "defaultValue": 10,
+      "defaultValue": 128,
       "metadata": {
         "description": "The size in GB of each data disk that is attached to the VM.  A MDADM RAID0  is created with all data disks auto-mounted,  that is dataDiskSize * dataDiskCount in size n the Storage ."
       }
     },
     "masterVMName": {
       "type": "string",
-      "defaultValue": "centos",
-      "allowedValues": [
-        "centos",
-        "ubuntuserver"
-      ],
+      "defaultValue": "cassandra",
       "metadata": {
         "description": "The Name of the VM."
       }
