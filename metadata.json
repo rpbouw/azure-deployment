@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Ubuntu server with configurable disks",
+  "description": "This is a template for creating single instance Ubuntu Server 16.04.0-LTS with configurable number of data disks (configurable sizes). Maximum 16 disks can be mentioned in the portal parameters and maximum size of each disk should be less than 1023 GB. The MDADM RAID0 Array is automounted and survives restarts.",
+  "summary": "This is a template for creating single instance UbuntuServer with configurable number of data disks automounted (configurable sizes)[MDADM RAID0 Array].",
+  "githubUsername": "rpbouw",
+  "dateUpdated": "2016-10-26"
+}
