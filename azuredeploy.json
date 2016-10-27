@@ -212,10 +212,10 @@
         "master": "10.0.0.254"
       }
     },
-    "newStorageAccountName": "[concat('sa_',uniqueString(resourceGroup().id))]",
-    "nicName": "[concat('nic_',uniqueString(resourceGroup().id))]",
-    "OSDiskName": "[concat('osdisk_',uniqueString(resourceGroup().id))]",
-    "publicIPAddressName": "[concat('pip_',uniqueString(resourceGroup().id))]",
+    "newStorageAccountName": "[concat('sa',uniqueString(resourceGroup().id))]",
+    "nicName": "[concat('nic',uniqueString(resourceGroup().id))]",
+    "OSDiskName": "[concat('osdisk',uniqueString(resourceGroup().id))]",
+    "publicIPAddressName": "[concat('pip',uniqueString(resourceGroup().id))]",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountContainerName": "vhd",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
