@@ -6,7 +6,7 @@
       "value": "GEN-UNIQUE"
     },
     "adminUserName": {
-      "value": "rene"
+      "value": "changeme"
     },
     "imagePublisher": {
       "value": "Canonical"
@@ -39,10 +39,10 @@
       "value": "0.8.1"
     },
     "dataDiskSize": {
-      "value": 128
+      "value": 128	
     },
     "masterVMName": {
-      "value": "cassandra"
+      "value": "GEN-UNIQUE"
     },
     "numDataDisks": {
       "value": "4"
