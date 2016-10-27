@@ -17,7 +17,7 @@
     },
     "imagePublisher": {
       "type": "string",
-      "defaultValue": "openlCanonicalogic",
+      "defaultValue": "Canonical",
       "allowedValues": [
         "Canonical",
         "openlogic"
@@ -166,6 +166,13 @@
         "description": "The Name of the VM."
       }
     },
+    "scaleNumber": {
+      "type": "int",
+      "defaultValue": 4,
+      "metadata": {
+        "description": "The number of VM's in the cluster."
+      }
+    },
     "numDataDisks": {
       "type": "string",
       "defaultValue": "4",
@@ -240,7 +247,10 @@
       "name": "[variables('avSetName')]",
       "apiVersion": "[variables('armApiVersion')]",
       "location": "[resourceGroup().location]",
-      "properties": { }
+      "properties": { 
+        "platformFaultDomainCount": "3",
+        "platformUpdateDomainCount": "20"
+      }
     },
     {
       "apiVersion": "[variables('armApiVersion')]",
@@ -266,8 +276,12 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "[variables('armApiVersion')]",
-      "name": "[variables('publicIPAddressName')]",
+      "name": "[concat(variables('publicIPAddressName'), copyIndex())]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "foo",
+        "count": "[parameters('scaleNumber')]"
+      },
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
@@ -278,10 +292,14 @@
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('nicName')]",
+      "name": "[concat(variables('nicName'), copyIndex())]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "foo",
+        "count": "[parameters('scaleNumber')]"
+      },
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+        "[concat('Microsoft.Network/publicIPAddresses/', [concat(variables('publicIPAddressName'), copyIndex())]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
       "properties": {
@@ -289,10 +307,9 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('networkSettings').statics.master]",
+              "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',[concat(variables('publicIPAddressName'), copyIndex())])]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -305,11 +322,15 @@
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('masterVMName')]",
+      "name": "[concat(parameters('masterVMName'), copyIndex())]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "foo",
+        "count": "[parameters('scaleNumber')]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex())]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('avSetName'))]",
         "[concat('Microsoft.Resources/deployments/', 'diskSelection')]"
       ],
@@ -321,7 +342,7 @@
           "vmSize": "[parameters('nodeSize')]"
         },
         "osProfile": {
-          "computername": "[parameters('masterVMName')]",
+          "computername": "[concat(parameters('masterVMName'), copyIndex())]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
             "disablePasswordAuthentication": "true",
@@ -346,7 +367,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),parameters('masterVMName'),'.vhd')]"
+              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),parameters('masterVMName'),copyIndex(),'.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -364,10 +385,10 @@
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('masterVMName'), '/Installation')]",
+      "name": "[concat(parameters('masterVMName'), copyIndex(), '/Installation')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('masterVMName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('masterVMName'), copyIndex())]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",

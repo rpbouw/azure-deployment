@@ -35,6 +35,9 @@
     "masterVMName": {
       "value": "GEN-UNIQUE"
     },
+    "scaleNumber": {
+      "value": 2
+    },
     "numDataDisks": {
       "value": "4"
     }

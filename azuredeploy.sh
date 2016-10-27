@@ -100,65 +100,35 @@ setup_shares()
   mkdir -p $SHARE_HOME
   mkdir -p $SHARE_DATA
 
-  # if is_master; then
-    #setup_data_disks $SHARE_DATA
-    setup_dynamicdata_disks $SHARE_DATA
-    echo "$SHARE_HOME    *(rw,async)" >> /etc/exports
-    echo "$SHARE_DATA    *(rw,async)" >> /etc/exports
+  setup_dynamicdata_disks $SHARE_DATA
+  echo "$SHARE_HOME    *(rw,async)" >> /etc/exports
+  echo "$SHARE_DATA    *(rw,async)" >> /etc/exports
 
-    if [ "$skuName" == "16.04.0-LTS" ] ; then
-      DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::Options::=--force-confdef -o DPkg::Options::=--force-confold \
-        install nfs-kernel-server
-      /etc/init.d/apparmor stop 
-      /etc/init.d/apparmor teardown 
-      update-rc.d -f apparmor remove
-      apt-get -y remove apparmor
-      systemctl start rpcbind || echo "Already enabled"
-      systemctl start nfs-server || echo "Already enabled"
-      systemctl start nfs-kernel-server.service
-      systemctl enable rpcbind || echo "Already enabled"
-      systemctl enable nfs-server || echo "Already enabled"
-      systemctl enable nfs-kernel-server.service
-    else
-      systemctl start rpcbind || echo "Already enabled"
-      systemctl start nfs-server || echo "Already enabled"
-      systemctl enable rpcbind || echo "Already enabled"
-      systemctl enable nfs-server || echo "Already enabled"
-    fi
+  if [ "$skuName" == "16.04.0-LTS" ] ; then
+    DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::Options::=--force-confdef -o DPkg::Options::=--force-confold \
+      install nfs-kernel-server
+    /etc/init.d/apparmor stop 
+    /etc/init.d/apparmor teardown 
+    update-rc.d -f apparmor remove
+    apt-get -y remove apparmor
+    systemctl start rpcbind || echo "Already enabled"
+    systemctl start nfs-server || echo "Already enabled"
+    systemctl start nfs-kernel-server.service
+    systemctl enable rpcbind || echo "Already enabled"
+    systemctl enable nfs-server || echo "Already enabled"
+    systemctl enable nfs-kernel-server.service
+  else
+    systemctl start rpcbind || echo "Already enabled"
+    systemctl start nfs-server || echo "Already enabled"
+    systemctl enable rpcbind || echo "Already enabled"
+    systemctl enable nfs-server || echo "Already enabled"
+  fi
 }
 
 set_time()
 {
     mv /etc/localtime /etc/localtime.bak
     ln -s /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime
-}
-
-
-# System Update.
-#
-system_update()
-{
-    rpm --rebuilddb
-    updatedb
-    yum clean all
-    yum -y install epel-release
-    yum -y update --exclude=WALinuxAgent
-
-    set_time
-}
-
-install_packages()
-{
-    yum -y install zlib zlib-devel bzip2 bzip2-devel bzip2-libs openssl openssl-devel openssl-libs  nfs-utils rpcbind git libicu libicu-devel make zip unzip mdadm wget gsl bc rpm-build  readline-devel pam-devel libXtst.i686 libXtst.x86_64 make.x86_64 sysstat.x86_64 python-pip automake autoconf\
-    binutils.x86_64 compat-libcap1.x86_64 glibc.i686 glibc.x86_64 \
-    ksh compat-libstdc++-33 libaio.i686 libaio.x86_64 libaio-devel.i686 libaio-devel.x86_64 \
-    libgcc.i686 libgcc.x86_64 libstdc++.i686 libstdc++.x86_64 libstdc++-devel.i686 libstdc++-devel.x86_64 libXi.i686 libXi.x86_64
-}
-
-install_pkgs_all()
-{
-    system_update
-    install_packages
 }
 
 install_packages_ubuntu()
