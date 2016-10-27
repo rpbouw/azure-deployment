@@ -406,7 +406,12 @@
     {
       "apiVersion": "2015-01-01",
       "name": "diskSelection",
+      "name": "[concat('diskSelection', copyIndex())]",
       "type": "Microsoft.Resources/deployments",
+      "copy": {
+        "name": "foo",
+        "count": "[parameters('scaleNumber')]"
+      },
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -430,7 +435,7 @@
             "value": "[variables('vmStorageAccountContainerName')]"
           },
           "masterName": {
-            "value": "[parameters('masterVMName')]"
+            "value": "[concat(parameters('masterVMName'), copyIndex())]"
           }
         }
       }
