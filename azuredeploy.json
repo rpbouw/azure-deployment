@@ -387,6 +387,10 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('masterVMName'), copyIndex(), '/Installation')]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "foo",
+        "count": "[parameters('scaleNumber')]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', parameters('masterVMName'), copyIndex())]"
       ],
