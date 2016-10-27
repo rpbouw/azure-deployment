@@ -196,7 +196,7 @@
   "variables": {
     "armApiVersion": "2015-06-15",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/",
-    "avSetName": "[concat('av_',uniqueString(resourceGroup().id))]",
+    "avSetName": "[concat('av',uniqueString(resourceGroup().id))]",
     "diskCaching": "ReadWrite",
     "networkSettings": {
       "virtualNetworkName": "virtualnetwork",

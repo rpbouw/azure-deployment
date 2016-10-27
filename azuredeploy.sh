@@ -7,7 +7,7 @@ if [[ $(id -u) -ne 0 ]] ; then
   exit 1
 fi
 
-if [ $# != 8 ]; then
+if [ $# != 5 ]; then
   echo "Usage: $0 <MasterHostname> <mountFolder> <numDataDisks> <adminUserName> <imageSku>"
   exit 1
 fi
