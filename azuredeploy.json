@@ -152,27 +152,6 @@
         "description": "Storage Account Type : Standard-LRS, Standard-GRS, Standard-RAGRS, Standard-ZRS"
       }
     },
-    "dockerVer": {
-      "type": "string",
-      "defaultValue": "1.12.1-1",
-      "metadata": {
-        "description": "The docker version **Only for 7.1/7.2 kernels 3.10 and above **"
-      }
-    },
-    "dockerComposeVer": {
-      "type": "string",
-      "defaultValue": "1.8.0",
-      "metadata": {
-        "description": "The Docker Compose Version **Only for 7.1/7.2 kernels 3.10 and above **"
-      }
-    },
-    "dockerMachineVer": {
-      "type": "string",
-      "defaultValue": "0.8.1",
-      "metadata": {
-        "description": "The docker-machine version **Only for 7.1/7.2 kernels 3.10 and above **"
-      }
-    },
     "dataDiskSize": {
       "type": "int",
       "defaultValue": 128,
@@ -217,7 +196,7 @@
   "variables": {
     "armApiVersion": "2015-06-15",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/",
-    "avSetName": "avSet",
+    "avSetName": "[concat('av_',uniqueString(resourceGroup().id))]",
     "diskCaching": "ReadWrite",
     "networkSettings": {
       "virtualNetworkName": "virtualnetwork",
@@ -233,10 +212,10 @@
         "master": "10.0.0.254"
       }
     },
-    "newStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'dynamicdisk')]",
-    "nicName": "nic",
-    "OSDiskName": "osdisk",
-    "publicIPAddressName": "publicips",
+    "newStorageAccountName": "[concat('sa_',uniqueString(resourceGroup().id))]",
+    "nicName": "[concat('nic_',uniqueString(resourceGroup().id))]",
+    "OSDiskName": "[concat('osdisk_',uniqueString(resourceGroup().id))]",
+    "publicIPAddressName": "[concat('pip_',uniqueString(resourceGroup().id))]",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountContainerName": "vhd",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
