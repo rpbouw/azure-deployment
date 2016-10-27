@@ -48,7 +48,7 @@
         "7.2"
       ],
       "metadata": {
-        "description": "P.S: OpenLogic CentOS version to use **docker usage Only for 7.1/7.2 kernels 3.10 and above **"
+        "description": "use default....."
       }
     },
     "sshPublicKey": {
