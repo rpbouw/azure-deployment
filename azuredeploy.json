@@ -327,7 +327,7 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex())]",
+        "nicLoop",
         "[concat('Microsoft.Compute/availabilitySets/', variables('avSetName'))]",
         "[concat('Microsoft.Resources/deployments/', 'diskSelection')]"
       ],
@@ -389,7 +389,7 @@
         "count": "[parameters('scaleNumber')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('masterVMName'), copyIndex())]"
+        "vmLoop"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
