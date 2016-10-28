@@ -329,7 +329,7 @@
         "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
         "nicLoop",
         "[concat('Microsoft.Compute/availabilitySets/', variables('avSetName'))]",
-        "[concat('Microsoft.Resources/deployments/', 'diskSelection')]"
+        "diskSelectionLoop"
       ],
       "properties": {
         "availabilitySet": {
@@ -354,7 +354,7 @@
           }
         },
         "storageProfile": {
-          "dataDisks": "[reference('diskSelection').outputs.dataDiskArray.value]",
+          "dataDisks": "[reference(concat('diskSelection',copyIndex())).outputs.dataDiskArray.value]",
           "imageReference": {
             "publisher": "[parameters('imagePublisher')]",
             "offer": "[parameters('imageOffer')]",
@@ -405,10 +405,9 @@
       }
     },
     {
-      "apiVersion": "2015-01-01",
-      "name": "diskSelection",
-      "name": "[concat('diskSelection', copyIndex())]",
+      "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Resources/deployments",
+      "name": "[concat('diskSelection', copyIndex())]",
       "copy": {
         "name": "diskSelectionLoop",
         "count": "[parameters('scaleNumber')]"
