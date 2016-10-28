@@ -214,9 +214,6 @@
           "prefix": "10.0.0.0/24",
           "vnet": "virtualnetwork"
         }
-      },
-      "statics": {
-        "master": "10.0.0.254"
       }
     },
     "newStorageAccountName": "[concat('sa',uniqueString(resourceGroup().id))]",
@@ -279,7 +276,7 @@
       "name": "[concat(variables('publicIPAddressName'), copyIndex())]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "foo",
+        "name": "publicIpLoop",
         "count": "[parameters('scaleNumber')]"
       },
       "properties": {
@@ -295,7 +292,7 @@
       "name": "[concat(variables('nicName'), copyIndex())]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "foo",
+        "name": "nicLoop",
         "count": "[parameters('scaleNumber')]"
       },
       "dependsOn": [
@@ -325,7 +322,7 @@
       "name": "[concat(parameters('masterVMName'), copyIndex())]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "foo",
+        "name": "vmLoop",
         "count": "[parameters('scaleNumber')]"
       },
       "dependsOn": [
@@ -388,7 +385,7 @@
       "name": "[concat(parameters('masterVMName'), copyIndex(), '/Installation')]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "foo",
+        "name": "vmExtensionLoop",
         "count": "[parameters('scaleNumber')]"
       },
       "dependsOn": [
@@ -413,7 +410,7 @@
       "name": "[concat('diskSelection', copyIndex())]",
       "type": "Microsoft.Resources/deployments",
       "copy": {
-        "name": "foo",
+        "name": "diskSelectionLoop",
         "count": "[parameters('scaleNumber')]"
       },
       "properties": {
