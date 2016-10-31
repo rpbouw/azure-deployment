@@ -305,7 +305,7 @@
     },
     {
       "apiVersion": "2015-01-01",
-      "name": "diskSelection",
+      "name": "[concat('diskSelection',parameters('masterVMName'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
