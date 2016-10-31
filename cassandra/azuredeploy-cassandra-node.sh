@@ -7,8 +7,8 @@ if [[ $(id -u) -ne 0 ]] ; then
   exit 1
 fi
 
-if [ $# != 5 ]; then
-  echo "Usage: $0 <MasterHostname> <mountFolder> <numDataDisks> <adminUserName> <imageSku>"
+if [ $# != 4 ]; then
+  echo "Usage: $0 <MasterHostname> <mountFolder> <numDataDisks> <adminUserName>"
   exit 1
 fi
 
@@ -19,7 +19,6 @@ SHARE_DATA=$MNT_POINT/data
 
 numberofDisks="$3"
 userName="$4"
-skuName="$5"
 
 setup_dynamicdata_disks()
 {
@@ -104,25 +103,17 @@ setup_shares()
   echo "$SHARE_HOME    *(rw,async)" >> /etc/exports
   echo "$SHARE_DATA    *(rw,async)" >> /etc/exports
 
-  if [ "$skuName" == "16.04.0-LTS" ] ; then
-    DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::Options::=--force-confdef -o DPkg::Options::=--force-confold \
-      install nfs-kernel-server
-    /etc/init.d/apparmor stop 
-    /etc/init.d/apparmor teardown 
-    update-rc.d -f apparmor remove
-    apt-get -y remove apparmor
-    systemctl start rpcbind || echo "Already enabled"
-    systemctl start nfs-server || echo "Already enabled"
-    systemctl start nfs-kernel-server.service
-    systemctl enable rpcbind || echo "Already enabled"
-    systemctl enable nfs-server || echo "Already enabled"
-    systemctl enable nfs-kernel-server.service
-  else
-    systemctl start rpcbind || echo "Already enabled"
-    systemctl start nfs-server || echo "Already enabled"
-    systemctl enable rpcbind || echo "Already enabled"
-    systemctl enable nfs-server || echo "Already enabled"
-  fi
+  DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::Options::=--force-confdef -o DPkg::Options::=--force-confold install nfs-kernel-server
+  /etc/init.d/apparmor stop 
+  /etc/init.d/apparmor teardown 
+  update-rc.d -f apparmor remove
+  apt-get -y remove apparmor
+  systemctl start rpcbind || echo "Already enabled"
+  systemctl start nfs-server || echo "Already enabled"
+  systemctl start nfs-kernel-server.service
+  systemctl enable rpcbind || echo "Already enabled"
+  systemctl enable nfs-server || echo "Already enabled"
+  systemctl enable nfs-kernel-server.service
 }
 
 set_time()

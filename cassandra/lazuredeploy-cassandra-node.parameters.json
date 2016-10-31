@@ -17,14 +17,8 @@
     "nodeSize": {
       "value": "Standard_DS2_v2"
     },
-    "storageType": {
-      "value": "Standard_LRS"
-    },
     "dataDiskSize": {
       "value": 10
-    },
-    "masterVMName": {
-      "value": "cassandra1"
     },
     "numDataDisks": {
       "value": "2"
