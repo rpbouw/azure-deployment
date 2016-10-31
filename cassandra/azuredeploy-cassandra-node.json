@@ -2,12 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "dnsLabelPrefix": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique public dns prefix where the  node will be exposed"
-      }
-    },
     "adminUserName": {
       "type": "string",
       "defaultValue": "azureuser",
@@ -15,10 +9,10 @@
         "description": "User name for the Virtual Machine. Pick a valid username otherwise there will be a BadRequest error."
       }
     },
-    "sshPublicKey": {
+    "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "This field must be a valid SSH public key. ssh with this RSA public key"
+        "description": "Password for the Virtual Machine."
       }
     },
     "mountFolder": {
@@ -111,7 +105,6 @@
     },
     "masterVMName": {
       "type": "string",
-      "defaultValue": "cassandra",
       "metadata": {
         "description": "The Name of the VM."
       }
@@ -144,50 +137,49 @@
     }
   },
   "variables": {
-    "armApiVersion": "2015-06-15",
+    "armApiVersion": "2016-09-01",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/cassandra/",
     "avSetName": "avSet",
     "diskCaching": "ReadWrite",
     "networkSettings": {
-      "virtualNetworkName": "virtualnetwork",
+      "virtualNetworkName": "datastorevnet",
       "addressPrefix": "10.0.0.0/16",
       "subnet": {
-        "dse": {
-          "name": "dse",
-          "prefix": "10.0.0.0/24",
-          "vnet": "virtualnetwork"
+        "jumpbox": {
+          "name": "jumpboxsubnet",
+          "prefix": "10.0.0.0/24"
+        },
+        "cassandra": {
+          "name": "cassandrasubnet",
+          "prefix": "10.0.1.0/24"
         }
-      },
-      "statics": {
-        "master": "10.0.0.254"
       }
     },
     "newStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'dynamicdisk')]",
-    "nicName": "nic",
+    "nicName": "[concat(parameters('masterVMName'), 'nic')]",
     "OSDiskName": "osdisk",
-    "publicIPAddressName": "publicips",
+    "publicIPAddressName": "[concat(parameters('masterVMName'), 'pip')]",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountContainerName": "vhd",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.dse.name)]",
-    "installationCLI": "[concat('bash azuredeploy-cassandra-node.sh ', parameters('masterVMName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'), ' ', parameters('imageSku'))]",
-    "storageAccountType": "Standard_LRS",
-    "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]"
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.cassandra.name)]",
+    "installationCLI": "[concat('bash azuredeploy-cassandra-node.sh ', parameters('masterVMName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'))]",
+    "storageAccountType": "Standard_LRS"
   },
   "resources": [
     {
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('newStorageAccountName')]",
-      "apiVersion": "[variables('armApiVersion')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "accountType": "[variables('storageAccountType')]"
       }
     },
     {
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('avSetName')]",
-      "apiVersion": "[variables('armApiVersion')]",
       "location": "[resourceGroup().location]",
       "properties": { }
     },
@@ -204,24 +196,19 @@
         },
         "subnets": [
           {
-            "name": "[variables('networkSettings').subnet.dse.name]",
+            "name": "[variables('networkSettings').subnet.jumpbox.name]",
             "properties": {
-              "addressPrefix": "[variables('networkSettings').subnet.dse.prefix]"
+              "addressPrefix": "[variables('networkSettings').subnet.jumpbox.prefix]"
+            }
+          },
+          {
+            "name": "[variables('networkSettings').subnet.cassandra.name]",
+            "properties": {
+              "addressPrefix": "[variables('networkSettings').subnet.cassandra.prefix]"
             }
           }
+
         ]
-      }
-    },
-    {
-      "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "[variables('armApiVersion')]",
-      "name": "[variables('publicIPAddressName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
-        }
       }
     },
     {
@@ -230,7 +217,6 @@
       "name": "[variables('nicName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
       "properties": {
@@ -238,11 +224,7 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('networkSettings').statics.master]",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
-              },
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
@@ -252,7 +234,7 @@
       }
     },
     {
-      "apiVersion": "[variables('armApiVersion')]",
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('masterVMName')]",
       "location": "[resourceGroup().location]",
@@ -272,17 +254,7 @@
         "osProfile": {
           "computername": "[parameters('masterVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": "true",
-            "ssh": {
-              "publicKeys": [
-                {
-                  "path": "[variables('sshKeyPath')]",
-                  "keyData": "[parameters('sshPublicKey')]"
-                }
-              ]
-            }
-          }
+          "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
           "dataDisks": "[reference('diskSelection').outputs.dataDiskArray.value]",
@@ -311,7 +283,7 @@
       }
     },
     {
-      "apiVersion": "[variables('armApiVersion')]",
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('masterVMName'), '/Installation')]",
       "location": "[resourceGroup().location]",
@@ -325,7 +297,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[concat(variables('artifactsLocation'), 'azuredeploy.sh')]"
+            "[concat(variables('artifactsLocation'), 'azuredeploy-cassandra-node.sh')]"
           ],
           "commandToExecute": "[variables('installationCLI')]"
         }

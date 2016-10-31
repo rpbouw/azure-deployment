@@ -24,9 +24,7 @@
       "type": "string",
       "defaultValue": "16.04.0-LTS",
       "allowedValues": [
-        "12.04.5-LTS",
         "14.04.5-LTS",
-        "15.10",
         "16.04.0-LTS"
       ],
       "metadata": {
@@ -35,30 +33,41 @@
     }
   },
   "variables": {
+    "armApiVersion": "2016-09-01",
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sajumpbox')]",
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
     "OSDiskName": "osdiskjumpbox",
     "nicName": "nicjumpbox",
-    "addressPrefix": "10.0.0.0/16",
-    "subnetName": "datastoreSubnet",
-    "subnetPrefix": "10.0.0.0/24",
+    "networkSettings": {
+      "virtualNetworkName": "datastorevnet",
+      "addressPrefix": "10.0.0.0/16",
+      "subnet": {
+        "jumpbox": {
+          "name": "jumpboxsubnet",
+          "prefix": "10.0.0.0/24"
+        },
+        "cassandra": {
+          "name": "cassandrasubnet",
+          "prefix": "10.0.1.0/24"
+        }
+      }
+    },
     "storageAccountType": "Standard_LRS",
     "publicIPAddressName": "pipjumpbox",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountContainerName": "vhds",
     "vmName": "jumpbox",
     "vmSize": "Standard_A1",
-    "virtualNetworkName": "datastorevnet",
-    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.jumpbox.name)]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]"
   },
   "resources": [
     {
+      "apiVersion": "2016-05-01",
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
-      "apiVersion": "2016-01-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "[variables('storageAccountType')]"
@@ -67,7 +76,7 @@
       "properties": {}
     },
     {
-      "apiVersion": "2016-09-01",
+      "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIPAddressName')]",
       "location": "[resourceGroup().location]",
@@ -79,39 +88,46 @@
       }
     },
     {
-      "apiVersion": "2016-09-01",
+      "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('virtualNetworkName')]",
+      "name": "[variables('networkSettings').virtualNetworkName]",
       "location": "[resourceGroup().location]",
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
-            "[variables('addressPrefix')]"
+            "[variables('networkSettings').addressPrefix]"
           ]
         },
         "subnets": [
           {
-            "name": "[variables('subnetName')]",
+            "name": "[variables('networkSettings').subnet.jumpbox.name]",
             "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]"
+              "addressPrefix": "[variables('networkSettings').subnet.jumpbox.prefix]"
+            }
+          },
+          {
+            "name": "[variables('networkSettings').subnet.cassandra.name]",
+            "properties": {
+              "addressPrefix": "[variables('networkSettings').subnet.cassandra.prefix]"
             }
           }
+
         ]
       }
     },
     {
-      "apiVersion": "2016-09-01",
+      "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
       "properties": {
         "ipConfigurations": [
           {
-            "name": "ipconfig1",
+            "name": "ipconfigjumpbox",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
