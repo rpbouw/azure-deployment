@@ -10,45 +10,9 @@
     },
     "adminUserName": {
       "type": "string",
-      "defaultValue": "rene",
+      "defaultValue": "azureuser",
       "metadata": {
         "description": "User name for the Virtual Machine. Pick a valid username otherwise there will be a BadRequest error."
-      }
-    },
-    "imagePublisher": {
-      "type": "string",
-      "defaultValue": "Canonical",
-      "allowedValues": [
-        "Canonical",
-        "openlogic"
-      ],
-      "metadata": {
-        "description": "openlogic/Canonical are the respective CentOS/Ubuntu Distributor in Azure Market Place"
-      }
-    },
-    "imageOffer": {
-      "type": "string",
-      "defaultValue": "UbuntuServer",
-      "allowedValues": [
-        "CentOS",
-        "UbuntuServer"
-      ],
-      "metadata": {
-        "description": "New CentOS/UbuntuServer Image Offer"
-      }
-    },
-    "imageSku": {
-      "type": "string",
-      "defaultValue": "16.04.0-LTS",
-      "allowedValues": [
-        "16.04.0-LTS",
-        "6.5",
-        "6.6",
-        "7.1",
-        "7.2"
-      ],
-      "metadata": {
-        "description": "use default....."
       }
     },
     "sshPublicKey": {
@@ -138,23 +102,9 @@
         "description": "Size of the  node."
       }
     },
-    "storageType": {
-      "type": "string",
-      "allowedValues": [
-        "Standard_LRS",
-        "Premium_LRS",
-        "Standard_GRS",
-        "Standard_RAGRS",
-        "Standard_ZRS"
-      ],
-      "defaultValue": "Standard_LRS",
-      "metadata": {
-        "description": "Storage Account Type : Standard-LRS, Standard-GRS, Standard-RAGRS, Standard-ZRS"
-      }
-    },
     "dataDiskSize": {
       "type": "int",
-      "defaultValue": 128,
+      "defaultValue": 10,
       "metadata": {
         "description": "The size in GB of each data disk that is attached to the VM.  A MDADM RAID0  is created with all data disks auto-mounted,  that is dataDiskSize * dataDiskCount in size n the Storage ."
       }
@@ -164,13 +114,6 @@
       "defaultValue": "cassandra",
       "metadata": {
         "description": "The Name of the VM."
-      }
-    },
-    "scaleNumber": {
-      "type": "int",
-      "defaultValue": 4,
-      "metadata": {
-        "description": "The number of VM's in the cluster."
       }
     },
     "numDataDisks": {
@@ -202,8 +145,8 @@
   },
   "variables": {
     "armApiVersion": "2015-06-15",
-    "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/",
-    "avSetName": "[concat('av',uniqueString(resourceGroup().id))]",
+    "artifactsLocation": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-vm-linux-dynamic-data-disks/",
+    "avSetName": "avSet",
     "diskCaching": "ReadWrite",
     "networkSettings": {
       "virtualNetworkName": "virtualnetwork",
@@ -214,21 +157,23 @@
           "prefix": "10.0.0.0/24",
           "vnet": "virtualnetwork"
         }
+      },
+      "statics": {
+        "master": "10.0.0.254"
       }
     },
-    "newStorageAccountName": "[concat('sa',uniqueString(resourceGroup().id))]",
-    "nicName": "[concat('nic',uniqueString(resourceGroup().id))]",
-    "OSDiskName": "[concat('osdisk',uniqueString(resourceGroup().id))]",
-    "publicIPAddressName": "[concat('pip',uniqueString(resourceGroup().id))]",
+    "newStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'dynamicdisk')]",
+    "nicName": "nic",
+    "OSDiskName": "osdisk",
+    "publicIPAddressName": "publicips",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountContainerName": "vhd",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.dse.name)]",
-    "installationCLI": "[concat('bash azuredeploy.sh ', parameters('masterVMName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'), ' ', parameters('imageSku'))]",
-    "storageAccountType": "[parameters('storageType')]",
+    "installationCLI": "[concat('bash azuredeploy-cassandra-node.sh ', parameters('masterVMName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'), ' ', parameters('imageSku'))]",
+    "storageAccountType": "Standard_LRS",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]"
   },
-
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -244,10 +189,7 @@
       "name": "[variables('avSetName')]",
       "apiVersion": "[variables('armApiVersion')]",
       "location": "[resourceGroup().location]",
-      "properties": { 
-        "platformFaultDomainCount": "3",
-        "platformUpdateDomainCount": "20"
-      }
+      "properties": { }
     },
     {
       "apiVersion": "[variables('armApiVersion')]",
@@ -273,12 +215,8 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "[variables('armApiVersion')]",
-      "name": "[concat(variables('publicIPAddressName'), copyIndex())]",
+      "name": "[variables('publicIPAddressName')]",
       "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "publicIpLoop",
-        "count": "[parameters('scaleNumber')]"
-      },
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
@@ -289,14 +227,10 @@
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('nicName'), copyIndex())]",
+      "name": "[variables('nicName')]",
       "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "nicLoop",
-        "count": "[parameters('scaleNumber')]"
-      },
       "dependsOn": [
-        "publicIpLoop",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
       "properties": {
@@ -304,9 +238,10 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('networkSettings').statics.master]",
               "publicIPAddress": {
-                "id": "[resourceId('publicIpLoop')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -319,17 +254,13 @@
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(parameters('masterVMName'), copyIndex())]",
+      "name": "[parameters('masterVMName')]",
       "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "vmLoop",
-        "count": "[parameters('scaleNumber')]"
-      },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
-        "nicLoop",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('avSetName'))]",
-        "diskSelectionLoop"
+        "[concat('Microsoft.Resources/deployments/', 'diskSelection')]"
       ],
       "properties": {
         "availabilitySet": {
@@ -339,7 +270,7 @@
           "vmSize": "[parameters('nodeSize')]"
         },
         "osProfile": {
-          "computername": "[concat(parameters('masterVMName'), copyIndex())]",
+          "computername": "[parameters('masterVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
             "disablePasswordAuthentication": "true",
@@ -354,17 +285,17 @@
           }
         },
         "storageProfile": {
-          "dataDisks": "[reference(concat('diskSelection',copyIndex())).outputs.dataDiskArray.value]",
+          "dataDisks": "[reference('diskSelection').outputs.dataDiskArray.value]",
           "imageReference": {
-            "publisher": "[parameters('imagePublisher')]",
-            "offer": "[parameters('imageOffer')]",
-            "sku": "[parameters('imageSku')]",
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04.0-LTS",
             "version": "latest"
           },
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),parameters('masterVMName'),copyIndex(),'.vhd')]"
+              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),parameters('masterVMName'),'.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -382,14 +313,10 @@
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('masterVMName'), copyIndex(), '/Installation')]",
+      "name": "[concat(parameters('masterVMName'), '/Installation')]",
       "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "vmExtensionLoop",
-        "count": "[parameters('scaleNumber')]"
-      },
       "dependsOn": [
-        "vmLoop"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('masterVMName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
@@ -405,13 +332,9 @@
       }
     },
     {
-      "apiVersion": "[variables('armApiVersion')]",
+      "apiVersion": "2015-01-01",
+      "name": "diskSelection",
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('diskSelection', copyIndex())]",
-      "copy": {
-        "name": "diskSelectionLoop",
-        "count": "[parameters('scaleNumber')]"
-      },
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -435,7 +358,7 @@
             "value": "[variables('vmStorageAccountContainerName')]"
           },
           "masterName": {
-            "value": "[concat(parameters('masterVMName'), copyIndex())]"
+            "value": "[parameters('masterVMName')]"
           }
         }
       }
