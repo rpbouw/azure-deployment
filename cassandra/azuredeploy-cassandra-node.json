@@ -158,7 +158,7 @@
     "newStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'dynamicdisk')]",
     "nicName": "[concat(parameters('masterVMName'), 'nic')]",
     "OSDiskName": "osdisk",
-    "dataDisksDeployment" : "[concat('diskSelection',parameters('masterVMName'))]",
+    "dataDisksDeployment" : "[concat('diskSelection1',parameters('masterVMName'))]",
     "publicIPAddressName": "[concat(parameters('masterVMName'), 'pip')]",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountContainerName": "vhd",
