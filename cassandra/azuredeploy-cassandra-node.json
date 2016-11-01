@@ -158,6 +158,7 @@
     "newStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'dynamicdisk')]",
     "nicName": "[concat(parameters('masterVMName'), 'nic')]",
     "OSDiskName": "osdisk",
+    "dataDisksDeployment" : "[concat('diskSelection',parameters('masterVMName'))]",
     "publicIPAddressName": "[concat(parameters('masterVMName'), 'pip')]",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountContainerName": "vhd",
@@ -242,7 +243,7 @@
         "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('avSetName'))]",
-        "[concat('Microsoft.Resources/deployments/', 'diskSelection')]"
+        "[concat('Microsoft.Resources/deployments/', variables('dataDisksDeployment'))]"
       ],
       "properties": {
         "availabilitySet": {
@@ -257,7 +258,7 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "dataDisks": "[reference('diskSelection').outputs.dataDiskArray.value]",
+          "dataDisks": "[reference(variables('dataDisksDeployment')).outputs.dataDiskArray.value]",
           "imageReference": {
             "publisher": "Canonical",
             "offer": "UbuntuServer",
@@ -305,7 +306,7 @@
     },
     {
       "apiVersion": "2015-01-01",
-      "name": "[concat('diskSelection',parameters('masterVMName'))]",
+      "name": "[variables('dataDisksDeployment')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
