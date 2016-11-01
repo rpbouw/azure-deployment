@@ -143,17 +143,56 @@
     }
   },
   "variables": {
-    "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/cassandra/"
+    "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/cassandra/",
+    "nodes":"[sub(parameters('nodeCount'),1)]"
   },
   "resources": [
     {
       "apiVersion": "2015-01-01",
-      "name": "[concat('CassandraDeployment', copyIndex())]",
+      "name": "CassandraDeploymentFirstNode",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('artifactsLocation'), 'azuredeploy-cassandra-node', '.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "adminUserName": {
+            "value": "[parameters('adminUserName')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "mountFolder": {
+            "value": "/data"
+          },
+          "nodeSize": {
+            "value": "[parameters('nodeSize')]"
+          },
+          "masterVMName": {
+            "value": "[concat(parameters('masterVMBaseName'), '0')]"
+          },
+          "dataDiskSize": {
+            "value": "[parameters('dataDiskSize')]"
+          },
+          "numDataDisks": {
+            "value": "[parameters('numDataDisks')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "name": "[concat('CassandraDeployment', copyIndex(1))]",
       "copy": {
         "name": "CassandraDeploymentLoop",
-        "count": "[parameters('nodeCount')]"
+        "count": "[variables('nodes')]"
       },
       "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "CassandraDeploymentFirstNode"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
