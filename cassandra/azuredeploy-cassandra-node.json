@@ -243,8 +243,7 @@
         "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('avSetName'))]",
-        "[concat('Microsoft.Resources/deployments/', variables('dataDisksDeployment'))]",
-        "jumpboxDeployment"
+        "[concat('Microsoft.Resources/deployments/', variables('dataDisksDeployment'))]"
       ],
       "properties": {
         "availabilitySet": {
@@ -333,32 +332,6 @@
           },
           "masterName": {
             "value": "[parameters('masterVMName')]"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2015-01-01",
-      "name": "jumpboxDeployment",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('artifactsLocation'), 'azuredeploy-jumpbox', '.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "dnsLabelPrefix": {
-            "value": "rabobank-datastore-jb"
-          },
-          "adminUserName": {
-            "value": "rene"
-          },
-          "ubuntuOSVersion": {
-            "value": "16.04.0-LTS"
-          },
-          "sshPublicKey": {
-            "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNTz1JvKG7FAYuEIMYOmMufibl0a4fYPQjZ9qx3AYe4RagJxuWZheu7Cw599YfPe3oq2hZkBjcGbU/NVAVKEpkkFeWUEp4sP0vd3rlC4/BMsll+QIAzC9URnlsaOYmbZkl9NRxf1aC4/TWzNuydztSsHSJQW+NP3jpIBS1QhLKKtFhNtXQN38GPdNIjWyyvO8L6sEQHXNjCQpLMyWYEcspImaABgi0wWvZtDOB/IQ7wr2jno5YIS5LosCzHJBrWtWGvbIgJPDGyByI++QP40yaC33BOjN/Xo/mArauvc4bcWq+da/PgbRmasg2JagAZVvYrB6q8a+1QXff5OGCHXWj"
           }
         }
       }
