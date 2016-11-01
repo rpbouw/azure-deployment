@@ -1,2 +1,2 @@
-azure group create -n cassandra -l "West Europe"
-azure group deployment create --template-file azuredeploy-cassandra-node.json -e lazuredeploy-cassandra-cluster.parameters.json -g cassandra -n CassandraDeployment
+azure group create -n cassandraw -l "West Europe"
+azure group deployment create --template-file azuredeploy-cassandra-node.json -e lazuredeploy-cassandra-node.parameters.json -g cassandraw -n CassandraDeployment

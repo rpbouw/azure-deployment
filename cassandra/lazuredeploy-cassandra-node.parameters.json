@@ -15,7 +15,7 @@
       "value": "Standard_DS2_v2"
     },
     "masterVMName": {
-      "value": "cassandra4"
+      "value": "cassandra9"
     },
     "dataDiskSize": {
       "value": 10
