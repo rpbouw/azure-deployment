@@ -12,19 +12,19 @@
       "value": "/data"
     },
     "nodeSize": {
-      "value": "Standard_DS2_v2"
+      "value": "Standard_DS3_v2"
     },
     "nodeCount": {
-      "value": 3
+      "value": 4
     },
     "masterVMBaseName": {
       "value": "cassandra"
     },
     "dataDiskSize": {
-      "value": 10
+      "value": 100
     },
     "numDataDisks": {
-      "value": "2"
+      "value": "8"
     }
   }
 }

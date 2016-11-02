@@ -146,7 +146,7 @@ install_cassandra()
   #install NTP
   DEBIAN_FRONTEND=noninteractive apt-get install -y ntp
   
-  # only of we use SDD:
+  # only if we use SDD:
   #https://docs.datastax.com/en/cassandra/2.0/cassandra/install/installRecommendSettings.html
   #echo 0 > /sys/class/block/sdc/queue/rotational
   #echo 8 > /sys/class/block/sdc/queue/read_ahead_kb
