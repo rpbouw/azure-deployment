@@ -165,7 +165,7 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.cassandra.name)]",
     "installationCLI": "[concat('bash azuredeploy-cassandra-node.sh ', parameters('masterVMName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'))]",
-    "storageAccountType": "Premium_LRS"
+    "storageAccountType": "Standard_LRS"
   },
   "resources": [
     {
