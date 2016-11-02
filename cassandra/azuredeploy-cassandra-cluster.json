@@ -97,14 +97,12 @@
     },
     "nodeCount": {
       "type": "int",
-      "defaultValue": 6,
       "metadata": {
         "description": "The number of nodes."
       }
     },
     "dataDiskSize": {
       "type": "int",
-      "defaultValue": 10,
       "metadata": {
         "description": "The size in GB of each data disk that is attached to the VM.  A MDADM RAID0  is created with all data disks auto-mounted,  that is dataDiskSize * dataDiskCount in size n the Storage ."
       }
@@ -117,7 +115,6 @@
     },
     "numDataDisks": {
       "type": "string",
-      "defaultValue": "4",
       "allowedValues": [
         "0",
         "1",
@@ -184,10 +181,10 @@
     },
     {
       "apiVersion": "2015-01-01",
-      "name": "[concat('CassandraDeployment', copyIndex(1))]",
+      "name": "[concat('CassandraDeployment', copyIndex())]",
       "copy": {
         "name": "CassandraDeploymentLoop",
-        "count": "[variables('nodes')]"
+        "count": "[parameters('nodeCount')]"
       },
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
