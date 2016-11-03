@@ -19,56 +19,48 @@
       "metadata": {
         "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
       }
-    },
-    "ubuntuOSVersion": {
-      "type": "string",
-      "defaultValue": "16.04.0-LTS",
-      "allowedValues": [
-        "14.04.5-LTS",
-        "16.04.0-LTS"
-      ],
-      "metadata": {
-        "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
-      }
     }
   },
   "variables": {
     "armApiVersion": "2016-09-01",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sajumpbox')]",
-    "imagePublisher": "Canonical",
-    "imageOffer": "UbuntuServer",
-    "OSDiskName": "osdiskjumpbox",
-    "nicName": "nicjumpbox",
+    "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/elasticsearch/",
+    "location": "[resourceGroup().location]",
+    "vmStorageAccountContainerName": "disks",
+    "storageAccountName": "[concat('elasticsrch',uniquestring(resourceGroup().id))]",
+    "storageAccountType": "Standard_LRS",
+    "vmimage": {
+      "publisher": "Canonical",
+      "offer": "UbuntuServer",
+      "sku": "14.04.5-LTS"
+    },
     "networkSettings": {
       "virtualNetworkName": "elasticsearch-vnet",
       "addressPrefix": "10.1.0.0/16",
       "subnet": {
-        "jumpbox": {
-          "name": "jumpboxsubnet",
-          "prefix": "10.1.0.0/24"
-        },
         "elasticsearch": {
-          "name": "elasticsearchsubnet",
-          "prefix": "10.1.1.0/24"
+          "name": "elasticsearch-subnet",
+          "prefix": "10.1.0.0/24"
         }
-      }
+      },
+      "privateIPAddress": "10.1.0.254",
+      "publicIPAddressName": "elasticsearch-ip-jumpbox",
+      "publicIPAddressType": "Dynamic"
     },
-    "storageAccountType": "Standard_LRS",
-    "publicIPAddressName": "pipjumpbox",
-    "publicIPAddressType": "Dynamic",
-    "vmStorageAccountContainerName": "vhds",
-    "vmName": "jumpbox",
+    "vmName": "elasticsearch-jb",
     "vmSize": "Standard_A1",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.jumpbox.name)]",
-    "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]"
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.elasticsearch.name)]",
+    "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
+    "nicName": "[concat(variables('vmName'),'-nic')]",
+    "installationScript": "azuredeploy-elasticsearch-jumpbox.sh",
+    "installationCLI": "[concat('bash ',variables('installationScript'), ' /data 0')]"
   },
   "resources": [
     {
       "apiVersion": "2016-05-01",
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('location')]",
       "sku": {
         "name": "[variables('storageAccountType')]"
       },
@@ -78,10 +70,10 @@
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressName')]",
-      "location": "[resourceGroup().location]",
+      "name": "[variables('networkSettings').publicIPAddressName]",
+      "location": "[variables('location')]",
       "properties": {
-        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+        "publicIPAllocationMethod": "[variables('networkSettings').publicIPAddressType]",
         "dnsSettings": {
           "domainNameLabel": "[parameters('dnsLabelPrefix')]"
         }
@@ -91,7 +83,7 @@
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('networkSettings').virtualNetworkName]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('location')]",
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -100,18 +92,11 @@
         },
         "subnets": [
           {
-            "name": "[variables('networkSettings').subnet.jumpbox.name]",
-            "properties": {
-              "addressPrefix": "[variables('networkSettings').subnet.jumpbox.prefix]"
-            }
-          },
-          {
             "name": "[variables('networkSettings').subnet.elasticsearch.name]",
             "properties": {
               "addressPrefix": "[variables('networkSettings').subnet.elasticsearch.prefix]"
             }
           }
-
         ]
       }
     },
@@ -119,9 +104,9 @@
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses/', variables('networkSettings').publicIPAddressName)]",
         "[resourceId('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
       "properties": {
@@ -129,9 +114,10 @@
           {
             "name": "ipconfigjumpbox",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('networkSettings').privateIPAddress]", 
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('networkSettings').publicIPAddressName)]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -145,7 +131,7 @@
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
@@ -171,15 +157,15 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "Canonical",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('ubuntuOSVersion')]",
+            "publisher": "[variables('vmimage').publisher]",
+            "offer": "[variables('vmimage').offer]",
+            "sku": "[variables('vmimage').sku]",
             "version": "latest"
           },
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2016-01-01').primaryEndpoints.blob, variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),'.vhd')]"
+              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2016-01-01').primaryEndpoints.blob, variables('vmStorageAccountContainerName'),'/',variables('vmName'),'.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -199,16 +185,37 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmName'), '/Installation')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[concat(variables('artifactsLocation'), variables('installationScript'))]"
+          ],
+          "commandToExecute": "[variables('installationCLI')]"
+        }
+      }
     }
   ],
   "outputs": {
     "hostname": {
       "type": "string",
-      "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
+      "value": "[reference(variables('networkSettings').publicIPAddressName).dnsSettings.fqdn]"
     },
     "sshCommand": {
       "type": "string",
-      "value": "[concat('ssh ', parameters('adminUsername'), '@', reference(variables('publicIPAddressName')).dnsSettings.fqdn)]"
+      "value": "[concat('ssh ', parameters('adminUsername'), '@', reference(variables('networkSettings').publicIPAddressName).dnsSettings.fqdn)]"
     }
   }
 }

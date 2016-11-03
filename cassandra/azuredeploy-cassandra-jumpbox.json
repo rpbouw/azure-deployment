@@ -23,6 +23,7 @@
   },
   "variables": {
     "armApiVersion": "2016-09-01",
+    "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/cassandra/",
     "location": "[resourceGroup().location]",
     "vmStorageAccountContainerName": "disks",
     "storageAccountName": "[concat('cassandra',uniquestring(resourceGroup().id))]",
@@ -50,9 +51,9 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.cassandra.name)]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
-    "nicName": "[concat(variables('vmname'),'-nic')]",
+    "nicName": "[concat(variables('vmName'),'-nic')]",
     "installationScript": "azuredeploy-cassandra-jumpbox.sh",
-    "installationCLI": "[concat('bash ',variables('installationScript'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'))]"   
+    "installationCLI": "[concat('bash ',variables('installationScript'), ' /data 0')]"
   },
   "resources": [
     {
@@ -188,10 +189,10 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmname'), '/Installation')]",
+      "name": "[concat(variables('vmName'), '/Installation')]",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmname'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
@@ -205,7 +206,7 @@
           "commandToExecute": "[variables('installationCLI')]"
         }
       }
-    },
+    }
   ],
   "outputs": {
     "hostname": {
