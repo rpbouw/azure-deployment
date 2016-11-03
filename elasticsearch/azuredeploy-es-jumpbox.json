@@ -40,16 +40,16 @@
     "OSDiskName": "osdiskjumpbox",
     "nicName": "nicjumpbox",
     "networkSettings": {
-      "virtualNetworkName": "datastorevnet",
-      "addressPrefix": "10.0.0.0/16",
+      "virtualNetworkName": "elasticsearch-vnet",
+      "addressPrefix": "10.1.0.0/16",
       "subnet": {
         "jumpbox": {
           "name": "jumpboxsubnet",
-          "prefix": "10.0.0.0/24"
+          "prefix": "10.1.0.0/24"
         },
-        "cassandra": {
-          "name": "cassandrasubnet",
-          "prefix": "10.0.1.0/24"
+        "elasticsearch": {
+          "name": "elasticsearchsubnet",
+          "prefix": "10.1.1.0/24"
         }
       }
     },
@@ -106,9 +106,9 @@
             }
           },
           {
-            "name": "[variables('networkSettings').subnet.cassandra.name]",
+            "name": "[variables('networkSettings').subnet.elasticsearch.name]",
             "properties": {
-              "addressPrefix": "[variables('networkSettings').subnet.cassandra.prefix]"
+              "addressPrefix": "[variables('networkSettings').subnet.elasticsearch.prefix]"
             }
           }
 

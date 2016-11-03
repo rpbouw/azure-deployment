@@ -1,0 +1,5 @@
+azure account set RABO-D51-CloudDelivery-Unmanaged
+azure group deployment create \
+    --template-file empty-resource-group.json \
+    -g RG-D51-APP-ONLINEDATASTORE-002 \
+    -n CassandraClusterDeployment
