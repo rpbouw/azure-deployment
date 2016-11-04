@@ -119,7 +119,10 @@ install_cassandra()
   chmod a+w /mnt
   
   #install java
-  DEBIAN_FRONTEND=noninteractive apt-get install -y default-jdk
+  DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:openjdk-r/ppa
+  DEBIAN_FRONTEND=noninteractive apt-get update 
+  DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk
+
 #  DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties debconf-utils
 #  add-apt-repository -y ppa:webupd8team/java
 #  DEBIAN_FRONTEND=noninteractive apt-get update
