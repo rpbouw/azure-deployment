@@ -78,6 +78,7 @@ EOF
 
   # Create RAID-0 volume
   if [ -n "$createdPartitions" ]; then
+    DEBIAN_FRONTEND=noninteractive apt-get install -y mdadm
     devices=`echo $createdPartitions | wc -w`
     mdadm --create /dev/md10 --level 0 --raid-devices $devices $createdPartitions
     mkfs -t ext4 /dev/md10
@@ -88,7 +89,6 @@ EOF
 
 install_packages_ubuntu()
 {
-  DEBIAN_FRONTEND=noninteractive apt-get install -y git zip unzip mdadm wget
   #DEBIAN_FRONTEND=noninteractive apt-get -y build-dep linux
   #DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
   DEBIAN_FRONTEND=noninteractive update-initramfs -u
@@ -118,7 +118,7 @@ install_cassandra()
   chmod a+w /mnt
   
   #install java
-  DEBIAN_FRONTEND=noninteractive apt-get install -y default-jdk
+#  DEBIAN_FRONTEND=noninteractive apt-get install -y default-jdk
 #  DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties debconf-utils
 #  add-apt-repository -y ppa:webupd8team/java
 #  DEBIAN_FRONTEND=noninteractive apt-get update
@@ -134,7 +134,7 @@ install_cassandra()
   
   DEBIAN_FRONTEND=noninteractive apt-get install -y cassandra
   
-  chown -R cassandra:cassandra /data/data
+  chown -R cassandra:cassandra /data
   
   service cassandra stop
   rm -rf /var/lib/cassandra/data
@@ -145,7 +145,7 @@ install_cassandra()
   CPU_CORES=$(nproc --all)
   sed -i s/"#concurrent_compactors: 1"/"concurrent_compactors: $CPU_CORES"/g /etc/cassandra/cassandra.yaml
   
-  sed -i s/"\/var\/lib\/cassandra\/data"/"\/data\/data"/g /etc/cassandra/cassandra.yaml
+  sed -i s/"\/var\/lib\/cassandra\/data"/"\/data"/g /etc/cassandra/cassandra.yaml
   
   sed -i s/"cluster_name:.*\$"/"cluster_name: 'DatastoreTest'"/g /etc/cassandra/cassandra.yaml
   sed -i s/"- seeds:.*\$"/"- seeds: \"10.2.0.4,10.2.0.5\""/g /etc/cassandra/cassandra.yaml
