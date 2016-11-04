@@ -167,7 +167,7 @@
           "nodeSize": {
             "value": "[parameters('nodeSize')]"
           },
-          "masterVMName": {
+          "vmName": {
             "value": "[concat(parameters('masterVMBaseName'), '0')]"
           },
           "dataDiskSize": {

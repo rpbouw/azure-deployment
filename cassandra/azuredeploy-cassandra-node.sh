@@ -89,44 +89,11 @@ EOF
   fi
 }
 
-# Creates and exports two shares on the node:
-#
-# /share/home 
-# /share/data
-#
-setup_shares()
-{
-  mkdir -p $SHARE_HOME
-  mkdir -p $SHARE_DATA
-
-  setup_dynamicdata_disks $SHARE_DATA
-  echo "$SHARE_HOME    *(rw,async)" >> /etc/exports
-  echo "$SHARE_DATA    *(rw,async)" >> /etc/exports
-
-  DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::Options::=--force-confdef -o DPkg::Options::=--force-confold install nfs-kernel-server
-  /etc/init.d/apparmor stop 
-  /etc/init.d/apparmor teardown 
-  update-rc.d -f apparmor remove
-  apt-get -y remove apparmor
-  systemctl start rpcbind || echo "Already enabled"
-  systemctl start nfs-server || echo "Already enabled"
-  systemctl start nfs-kernel-server.service
-  systemctl enable rpcbind || echo "Already enabled"
-  systemctl enable nfs-server || echo "Already enabled"
-  systemctl enable nfs-kernel-server.service
-}
-
-set_time()
-{
-    mv /etc/localtime /etc/localtime.bak
-    ln -s /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime
-}
-
 install_packages_ubuntu()
 {
-  DEBIAN_FRONTEND=noninteractive apt-get install -y zlib1g zlib1g-dev  bzip2 libbz2-dev libssl1.0.0  libssl-doc libssl1.0.0-dbg libsslcommon2 libsslcommon2-dev libssl-dev  nfs-common rpcbind git zip libicu55 libicu-dev icu-devtools unzip mdadm wget gsl-bin libgsl2  bc ruby-dev gcc make autoconf bison build-essential libyaml-dev libreadline6-dev libncurses5 libncurses5-dev libffi-dev libgdbm3 libgdbm-dev libpam0g-dev libxtst6 libxtst6-* libxtst-* libxext6 libxext6-* libxext-* git-core libelf-dev asciidoc binutils-dev fakeroot crash kexec-tools makedumpfile kernel-wedge portmap
-  DEBIAN_FRONTEND=noninteractive apt-get -y build-dep linux
-  DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+  DEBIAN_FRONTEND=noninteractive apt-get install -y git zip unzip mdadm wget
+  #DEBIAN_FRONTEND=noninteractive apt-get -y build-dep linux
+  #DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
   DEBIAN_FRONTEND=noninteractive update-initramfs -u
 }
 
@@ -183,7 +150,7 @@ install_cassandra()
   sed -i s/"\/var\/lib\/cassandra\/data"/"\/data\/data"/g /etc/cassandra/cassandra.yaml
   
   sed -i s/"cluster_name:.*\$"/"cluster_name: 'DatastoreTest'"/g /etc/cassandra/cassandra.yaml
-  sed -i s/"- seeds:.*\$"/"- seeds: \"10.0.1.4,10.0.1.5\""/g /etc/cassandra/cassandra.yaml
+  sed -i s/"- seeds:.*\$"/"- seeds: \"10.2.0.4,10.2.0.5\""/g /etc/cassandra/cassandra.yaml
   
   
   echo "#custom settings" >> /etc/cassandra/jvm.options
@@ -193,5 +160,5 @@ install_cassandra()
 }
 
 install_packages_ubuntu
-setup_shares
+setup_dynamicdata_disks $MNT_POINT
 install_cassandra

@@ -157,10 +157,10 @@
           "prefix": "10.2.0.0/24"
         }
       },
-      "publicIPAddressName": "[concat(variables('vmName'), 'pip')]",
+      "publicIPAddressName": "[concat(variables('vmName'), 'pip')]"
     },
-    "vmName": "parameters('masterVMName')",
-    "vmSize": "Standard_A1",
+    "vmName": "[parameters('vmName')]",
+    "vmSize": "[parameters('nodeSize')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.cassandra.name)]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
@@ -169,18 +169,9 @@
     "installationCLI": "[concat('bash ',variables('installationScript'), ' ', variables('vmName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'))]",
     "avSetName": "avSet",
     "diskCaching": "ReadWrite",
-    "dataDisksDeployment" : "[concat('diskSelection1',variables('vmName'))]",
+    "dataDisksDeployment" : "[concat('diskSelection1',variables('vmName'))]"
   },
   "resources": [
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccountName')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "accountType": "[variables('storageAccountType')]"
-      }
-    },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
@@ -188,7 +179,30 @@
       "location": "[variables('location')]",
       "properties": {
         "platformUpdateDomainCount": "18",
-        "platformFaultDomainCount": "3",
+        "platformFaultDomainCount": "3"
+      }
+    },
+    {
+      "apiVersion": "2016-05-01",
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "[variables('storageAccountType')]"
+      },
+      "kind": "Storage",
+      "properties": {}
+    },
+    {
+      "apiVersion": "[variables('armApiVersion')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('networkSettings').publicIPAddressName]",
+      "location": "[variables('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[concat('rabobank-',variables('vmName'))]"
+        }
       }
     },
     {
@@ -204,18 +218,11 @@
         },
         "subnets": [
           {
-            "name": "[variables('networkSettings').subnet.jumpbox.name]",
-            "properties": {
-              "addressPrefix": "[variables('networkSettings').subnet.jumpbox.prefix]"
-            }
-          },
-          {
             "name": "[variables('networkSettings').subnet.cassandra.name]",
             "properties": {
               "addressPrefix": "[variables('networkSettings').subnet.cassandra.prefix]"
             }
           }
-
         ]
       }
     },
@@ -225,14 +232,18 @@
       "name": "[variables('nicName')]",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
+        "[resourceId('Microsoft.Network/publicIPAddresses/', variables('networkSettings').publicIPAddressName)]",
+        "[resourceId('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
       "properties": {
         "ipConfigurations": [
           {
-            "name": "ipconfig1",
+            "name": "ipconfig",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('networkSettings').publicIPAddressName)]"
+              },
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
@@ -241,13 +252,60 @@
         ]
       }
     },
+	{
+      "apiVersion": "2015-06-15",
+	  "name": "cassandracluster-nsg",
+	  "type": "Microsoft.Network/networkSecurityGroups",
+	  "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+	  "properties": {
+	    "securityRules": [ 
+	      {
+            "name": "AllowVnetInBound",
+            "properties": {
+              "provisioningState": "Succeeded",
+              "description": "Allow inbound traffic from all VMs in VNET",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 200,
+              "direction": "Inbound"
+            }
+          },
+          {
+	        "name": "denyall",
+	        "properties": {
+	          "provisioningState": "Succeeded",
+	          "protocol": "*",
+	          "sourcePortRange": "*",
+	          "destinationPortRange": "*",
+	          "sourceAddressPrefix": "*",
+	          "destinationAddressPrefix": "*",
+	          "access": "Deny",
+	          "priority": 100,
+	          "direction": "Inbound"
+	        }
+	      }
+	    ],
+	    "networkInterfaces": [
+	      {
+	        "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+	      }
+	    ]
+	  }
+	},
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmName')]",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('avSetName'))]",
         "[concat('Microsoft.Resources/deployments/', variables('dataDisksDeployment'))]"
@@ -267,15 +325,15 @@
         "storageProfile": {
           "dataDisks": "[reference(variables('dataDisksDeployment')).outputs.dataDiskArray.value]",
           "imageReference": {
-            "publisher": "Canonical",
-            "offer": "UbuntuServer",
-            "sku": "14.04.5-LTS",
+            "publisher": "[variables('vmimage').publisher]",
+            "offer": "[variables('vmimage').offer]",
+            "sku": "[variables('vmimage').sku]",
             "version": "latest"
           },
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),variables('vmName'),'.vhd')]"
+              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2016-01-01').primaryEndpoints.blob, variables('vmStorageAccountContainerName'),'/',variables('vmName'),'.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -305,7 +363,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[concat(variables('artifactsLocation'), 'azuredeploy-cassandra-node.sh')]"
+            "[concat(variables('artifactsLocation'), variables('installationScript'))]"
           ],
           "commandToExecute": "[variables('installationCLI')]"
         }
@@ -326,7 +384,7 @@
             "value": "[parameters('numDataDisks')]"
           },
           "diskStorageAccountName": {
-            "value": "[variables('newStorageAccountName')]"
+            "value": "[variables('storageAccountName')]"
           },
           "diskCaching": {
             "value": "[variables('diskCaching')]"
