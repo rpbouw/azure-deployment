@@ -78,6 +78,7 @@ EOF
 
   # Create RAID-0 volume
   if [ -n "$createdPartitions" ]; then
+    mkdir /data
     DEBIAN_FRONTEND=noninteractive apt-get install -y mdadm
     devices=`echo $createdPartitions | wc -w`
     mdadm --create /dev/md10 --level 0 --raid-devices $devices $createdPartitions
