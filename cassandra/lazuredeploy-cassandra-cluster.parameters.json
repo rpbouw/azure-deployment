@@ -8,23 +8,20 @@
     "adminPassword": {
       "value": "Geheim1"
     },
-    "mountFolder": {
-      "value": "/data"
-    },
     "nodeSize": {
       "value": "Standard_DS3_v2"
     },
-    "nodeCount": {
-      "value": 4
-    },
-    "masterVMBaseName": {
+    "vmBaseName": {
       "value": "cassandra"
     },
     "dataDiskSize": {
-      "value": 100
+      "value": 10
     },
     "numDataDisks": {
       "value": "8"
+    },
+    "nodeCount": {
+      "value": 4
     }
   }
 }

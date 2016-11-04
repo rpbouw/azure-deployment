@@ -14,13 +14,6 @@
         "description": "Password for the Virtual Machines."
       }
     },
-    "mountFolder": {
-      "type": "string",
-      "defaultValue": "/data",
-      "metadata": {
-        "description": "The Folder system to be auto-mounted."
-      }
-    },
     "nodeSize": {
       "type": "string",
       "allowedValues": [
@@ -161,14 +154,11 @@
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
           },
-          "mountFolder": {
-            "value": "/data"
-          },
           "nodeSize": {
             "value": "[parameters('nodeSize')]"
           },
           "vmName": {
-            "value": "[concat(parameters('masterVMBaseName'), '0')]"
+            "value": "[concat(parameters('vmBaseName'), '0')]"
           },
           "dataDiskSize": {
             "value": "[parameters('dataDiskSize')]"
@@ -203,14 +193,11 @@
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
           },
-          "mountFolder": {
-            "value": "/data"
-          },
           "nodeSize": {
             "value": "[parameters('nodeSize')]"
           },
-          "masterVMName": {
-            "value": "[concat(parameters('masterVMBaseName'), copyIndex())]"
+          "vmName": {
+            "value": "[concat(parameters('vmBaseName'), copyIndex())]"
           },
           "dataDiskSize": {
             "value": "[parameters('dataDiskSize')]"

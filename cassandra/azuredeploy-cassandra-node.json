@@ -15,13 +15,6 @@
         "description": "Password for the Virtual Machine."
       }
     },
-    "mountFolder": {
-      "type": "string",
-      "defaultValue": "/data",
-      "metadata": {
-        "description": "The Folder system to be auto-mounted."
-      }
-    },
     "nodeSize": {
       "type": "string",
       "allowedValues": [
@@ -166,7 +159,7 @@
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(variables('vmName'),'-nic')]",
     "installationScript": "azuredeploy-cassandra-node.sh",
-    "installationCLI": "[concat('bash ',variables('installationScript'), ' ', variables('vmName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'))]",
+    "installationCLI": "[concat('bash ',variables('installationScript'), ' ', variables('vmName'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'))]",
     "avSetName": "avSet",
     "diskCaching": "ReadWrite",
     "dataDisksDeployment" : "[concat('diskSelection1',variables('vmName'))]"

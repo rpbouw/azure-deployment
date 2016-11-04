@@ -8,9 +8,6 @@
     "adminPassword": {
       "value": "Geheim1"
     },
-    "mountFolder": {
-      "value": "/data"
-    },
     "nodeSize": {
       "value": "Standard_DS3_v2"
     },

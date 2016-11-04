@@ -13,9 +13,9 @@ if [ $# != 4 ]; then
 fi
 
 MASTER_HOSTNAME=$1
-MNT_POINT="$2"
-numberofDisks="$3"
-userName="$4"
+MNT_POINT="/data"
+numberofDisks="$2"
+userName="$3"
 
 setup_dynamicdata_disks()
 {
