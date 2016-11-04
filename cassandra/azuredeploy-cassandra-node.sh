@@ -121,6 +121,7 @@ install_cassandra()
   #install java
   DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:openjdk-r/ppa
   DEBIAN_FRONTEND=noninteractive apt-get update 
+  DEBIAN_FRONTEND=noninteractive apt-get purge -y openjdk-\*
   DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk
 
 #  DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties debconf-utils
