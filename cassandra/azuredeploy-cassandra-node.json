@@ -91,7 +91,7 @@
         "Standard_GS4",
         "Standard_GS5"
       ],
-      "defaultValue": "Standard_DS2_v2",
+      "defaultValue": "Standard_DS2_v3",
       "metadata": {
         "description": "Size of the  node."
       }
@@ -103,7 +103,7 @@
         "description": "The size in GB of each data disk that is attached to the VM.  A MDADM RAID0  is created with all data disks auto-mounted,  that is dataDiskSize * dataDiskCount in size n the Storage ."
       }
     },
-    "masterVMName": {
+    "vmName": {
       "type": "string",
       "metadata": {
         "description": "The Name of the VM."
@@ -139,40 +139,44 @@
   "variables": {
     "armApiVersion": "2016-09-01",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/cassandra/",
-    "avSetName": "avSet",
-    "diskCaching": "ReadWrite",
-    "networkSettings": {
-      "virtualNetworkName": "datastorevnet",
-      "addressPrefix": "10.0.0.0/16",
-      "subnet": {
-        "jumpbox": {
-          "name": "jumpboxsubnet",
-          "prefix": "10.0.0.0/24"
-        },
-        "cassandra": {
-          "name": "cassandrasubnet",
-          "prefix": "10.0.1.0/24"
-        }
-      }
+    "location": "[resourceGroup().location]",
+    "vmStorageAccountContainerName": "disks",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id),'cassandra')]",
+    "storageAccountType": "Standard_LRS",
+    "vmimage": {
+      "publisher": "Canonical",
+      "offer": "UbuntuServer",
+      "sku": "14.04.5-LTS"
     },
-    "newStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'dynamicdisk')]",
-    "nicName": "[concat(parameters('masterVMName'), 'nic')]",
-    "OSDiskName": "osdisk",
-    "dataDisksDeployment" : "[concat('diskSelection1',parameters('masterVMName'))]",
-    "publicIPAddressName": "[concat(parameters('masterVMName'), 'pip')]",
-    "publicIPAddressType": "Dynamic",
-    "vmStorageAccountContainerName": "vhd",
+    "networkSettings": {
+      "virtualNetworkName": "cassandra-vnet",
+      "addressPrefix": "10.2.0.0/16",
+      "subnet": {
+        "cassandra": {
+          "name": "cassandra-subnet",
+          "prefix": "10.2.0.0/24"
+        }
+      },
+      "publicIPAddressName": "[concat(variables('vmName'), 'pip')]",
+    },
+    "vmName": "parameters('masterVMName')",
+    "vmSize": "Standard_A1",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.cassandra.name)]",
-    "installationCLI": "[concat('bash azuredeploy-cassandra-node.sh ', parameters('masterVMName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'))]",
-    "storageAccountType": "Standard_LRS"
+    "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
+    "nicName": "[concat(variables('vmName'),'-nic')]",
+    "installationScript": "azuredeploy-cassandra-node.sh",
+    "installationCLI": "[concat('bash ',variables('installationScript'), ' ', variables('vmName'), ' ', parameters('mountFolder'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'))]",
+    "avSetName": "avSet",
+    "diskCaching": "ReadWrite",
+    "dataDisksDeployment" : "[concat('diskSelection1',variables('vmName'))]",
   },
   "resources": [
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('newStorageAccountName')]",
-      "location": "[resourceGroup().location]",
+      "name": "[variables('storageAccountName')]",
+      "location": "[variables('location')]",
       "properties": {
         "accountType": "[variables('storageAccountType')]"
       }
@@ -181,14 +185,17 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('avSetName')]",
-      "location": "[resourceGroup().location]",
-      "properties": { }
+      "location": "[variables('location')]",
+      "properties": {
+        "platformUpdateDomainCount": "18",
+        "platformFaultDomainCount": "3",
+      }
     },
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('networkSettings').virtualNetworkName]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('location')]",
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -216,7 +223,7 @@
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
@@ -237,8 +244,8 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('masterVMName')]",
-      "location": "[resourceGroup().location]",
+      "name": "[variables('vmName')]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
@@ -253,7 +260,7 @@
           "vmSize": "[parameters('nodeSize')]"
         },
         "osProfile": {
-          "computername": "[parameters('masterVMName')]",
+          "computername": "[variables('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -268,7 +275,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),parameters('masterVMName'),'.vhd')]"
+              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),variables('vmName'),'.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -286,10 +293,10 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('masterVMName'), '/Installation')]",
-      "location": "[resourceGroup().location]",
+      "name": "[concat(variables('vmName'), '/Installation')]",
+      "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('masterVMName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
@@ -331,7 +338,7 @@
             "value": "[variables('vmStorageAccountContainerName')]"
           },
           "masterName": {
-            "value": "[parameters('masterVMName')]"
+            "value": "[variables('vmName')]"
           }
         }
       }

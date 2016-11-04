@@ -26,7 +26,7 @@
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/cassandra/",
     "location": "[resourceGroup().location]",
     "vmStorageAccountContainerName": "disks",
-    "storageAccountName": "[concat('cassandra',uniquestring(resourceGroup().id))]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id),'cassandra')]",
     "storageAccountType": "Standard_LRS",
     "vmimage": {
       "publisher": "Canonical",
@@ -127,6 +127,50 @@
         ]
       }
     },
+	{
+	  "name": "cassandra-nsg",
+	  "type": "Microsoft.Network/networkSecurityGroups",
+	  "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+	  "properties": {
+	    "securityRules": [
+	      {
+	        "name": "ssh",
+	        "properties": {
+	          "protocol": "TCP",
+	          "sourcePortRange": "*",
+	          "destinationPortRange": "22",
+	          "sourceAddressPrefix": "*",
+	          "destinationAddressPrefix": "*",
+	          "access": "Allow",
+	          "priority": 200,
+	          "direction": "Inbound"
+	        }
+	      },
+	      {
+	        "name": "denyall",
+	        "properties": {
+	          "provisioningState": "Succeeded",
+	          "protocol": "*",
+	          "sourcePortRange": "*",
+	          "destinationPortRange": "*",
+	          "sourceAddressPrefix": "*",
+	          "destinationAddressPrefix": "*",
+	          "access": "Deny",
+	          "priority": 100,
+	          "direction": "Inbound"
+	        }
+	      }
+	    ],
+	    "networkInterfaces": [
+	      {
+	        "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+	      }
+	    ]
+	  }
+	},
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines",
