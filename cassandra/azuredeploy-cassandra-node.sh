@@ -14,9 +14,6 @@ fi
 
 MASTER_HOSTNAME=$1
 MNT_POINT="$2"
-SHARE_HOME=$MNT_POINT/home
-SHARE_DATA=$MNT_POINT/data
-
 numberofDisks="$3"
 userName="$4"
 
@@ -121,11 +118,12 @@ install_cassandra()
   chmod a+w /mnt
   
   #install java
-  DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties debconf-utils
-  add-apt-repository -y ppa:webupd8team/java
-  DEBIAN_FRONTEND=noninteractive apt-get update
-  echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
-  DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java8-installer
+  DEBIAN_FRONTEND=noninteractive apt-get install -y default-jdk
+#  DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties debconf-utils
+#  add-apt-repository -y ppa:webupd8team/java
+#  DEBIAN_FRONTEND=noninteractive apt-get update
+#  echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+#  DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java8-installer
   
   #install cassandra
   echo "deb http://www.apache.org/dist/cassandra/debian 39x main" | tee -a /etc/apt/sources.list.d/cassandra.sources.list
