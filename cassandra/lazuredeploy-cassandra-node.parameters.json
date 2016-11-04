@@ -12,7 +12,7 @@
       "value": "Standard_DS3_v2"
     },
     "vmName": {
-      "value": "cassandra1"
+      "value": "cassandra3"
     },
     "dataDiskSize": {
       "value": 10
