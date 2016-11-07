@@ -155,6 +155,10 @@ install_cassandra()
   sed -i s/"cluster_name:.*\$"/"cluster_name: 'DatastoreTest'"/g /etc/cassandra/cassandra.yaml
   sed -i s/"- seeds:.*\$"/"- seeds: \"10.2.0.4,10.2.0.5\""/g /etc/cassandra/cassandra.yaml
   
+  sed -i s/"endpoint_snitch:.*\$"/"endpoint_snitch: GossipingPropertyFileSnitch"/g /etc/cassandra/cassandra.yaml
+  
+  RACK=`grep randomId /var/lib/waagent/SharedConfig.xml|gawk 'BEGIN { FS="\"" }; { print $2 }'`
+  sed -i s/"rack=.*\$"/"rack=rack$RACK"/g /etc/cassandra/cassandra-rackdc.properties
   
   echo "#custom settings" >> /etc/cassandra/jvm.options
   echo "-Dcassandra.logdir=/mnt" >> /etc/cassandra/jvm.options
