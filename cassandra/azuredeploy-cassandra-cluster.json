@@ -139,8 +139,27 @@
   "resources": [
     {
       "apiVersion": "2015-01-01",
+      "name": "CassandraDeploymentJumpBox",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('artifactsLocation'), 'azuredeploy-cassandra-jumpbox', '.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": { 
+          "uri": "[concat(variables('artifactsLocation'), 'azuredeploy-cassandra-jumpbox.parameters', '.json')]",
+          "contentVersion": "1.0.0.0"
+        } 
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
       "name": "CassandraDeploymentFirstNode",
       "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "CassandraDeploymentJumpBox"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
