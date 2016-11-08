@@ -7,8 +7,8 @@ if [[ $(id -u) -ne 0 ]] ; then
   exit 1
 fi
 
-if [ $# != 3 ]; then
-  echo "Usage: $0 <MasterHostname> <numDataDisks> <adminUserName>"
+if [ $# != 4 ]; then
+  echo "Usage: $0 <MasterHostname> <numDataDisks> <adminUserName> <datacenter>"
   exit 1
 fi
 
@@ -16,6 +16,7 @@ MASTER_HOSTNAME=$1
 MNT_POINT="/data"
 numberofDisks="$2"
 userName="$3"
+datacenter="$4"
 
 setup_dynamicdata_disks()
 {
@@ -159,6 +160,7 @@ install_cassandra()
   
   RACK=`grep randomId /var/lib/waagent/SharedConfig.xml|gawk 'BEGIN { FS="\"" }; { print $2 }'`
   sed -i s/"rack=.*\$"/"rack=rack$RACK"/g /etc/cassandra/cassandra-rackdc.properties
+  sed -i s/"dc=.*\$"/"dc=$datacenter"/g /etc/cassandra/cassandra-rackdc.properties
   
   echo "#custom settings" >> /etc/cassandra/jvm.options
   echo "-Dcassandra.logdir=/mnt" >> /etc/cassandra/jvm.options

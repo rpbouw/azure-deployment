@@ -31,7 +31,7 @@
     "vmimage": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
-      "sku": "14.04.5-LTS"
+      "sku": "16.04.0-LTS"
     },
     "networkSettings": {
       "virtualNetworkName": "cassandra-vnet",
@@ -100,6 +100,16 @@
         ]
       }
     },
+	{
+      "apiVersion": "2015-06-15",
+	  "name": "cassandra-jb-nsg",
+	  "type": "Microsoft.Network/networkSecurityGroups",
+	  "location": "[variables('location')]",
+	  "properties": {
+	    "securityRules": [],
+	    "networkInterfaces": []
+	  }
+	},
     {
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
@@ -107,6 +117,7 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses/', variables('networkSettings').publicIPAddressName)]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups/', 'cassandra-jb-nsg')]",
         "[resourceId('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
       "properties": {
@@ -124,54 +135,12 @@
               }
             }
           }
-        ]
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', 'cassandra-jb-nsg')]"
+        }
       }
     },
-	{
-      "apiVersion": "2015-06-15",
-	  "name": "cassandra-nsg",
-	  "type": "Microsoft.Network/networkSecurityGroups",
-	  "location": "[variables('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
-      ],
-	  "properties": {
-	    "securityRules": [
-	      {
-	        "name": "ssh",
-	        "properties": {
-	          "protocol": "TCP",
-	          "sourcePortRange": "*",
-	          "destinationPortRange": "22",
-	          "sourceAddressPrefix": "*",
-	          "destinationAddressPrefix": "*",
-	          "access": "Allow",
-	          "priority": 200,
-	          "direction": "Inbound"
-	        }
-	      },
-	      {
-	        "name": "denyall",
-	        "properties": {
-	          "provisioningState": "Succeeded",
-	          "protocol": "*",
-	          "sourcePortRange": "*",
-	          "destinationPortRange": "*",
-	          "sourceAddressPrefix": "*",
-	          "destinationAddressPrefix": "*",
-	          "access": "Deny",
-	          "priority": 100,
-	          "direction": "Inbound"
-	        }
-	      }
-	    ],
-	    "networkInterfaces": [
-	      {
-	        "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-	      }
-	    ]
-	  }
-	},
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines",

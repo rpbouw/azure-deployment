@@ -1,4 +1,5 @@
 azure account set RABO-D51-CloudDelivery-Unmanaged
+azure vm delete RG-D51-APP-ONLINEDATASTORE-002 cassandra-jb -q &
 azure vm delete RG-D51-APP-ONLINEDATASTORE-002 cassandra0 -q &
 azure vm delete RG-D51-APP-ONLINEDATASTORE-002 cassandra1 -q &
 azure vm delete RG-D51-APP-ONLINEDATASTORE-002 cassandra2 -q &

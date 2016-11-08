@@ -132,9 +132,9 @@
   "variables": {
     "armApiVersion": "2016-09-01",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/cassandra/",
-    "location": "[resourceGroup().location]",
-    "vmStorageAccountContainerName": "disks",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id),'cassandra')]",
+    "location": "northeurope",
+    "vmStorageAccountContainerName": "disks-ne",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id),'casne')]",
     "storageAccountType": "Standard_LRS",
     "vmimage": {
       "publisher": "Canonical",
@@ -142,12 +142,12 @@
       "sku": "16.04.0-LTS"
     },
     "networkSettings": {
-      "virtualNetworkName": "cassandra-vnet",
-      "addressPrefix": "10.2.0.0/16",
+      "virtualNetworkName": "cassandra-ne-vnet",
+      "addressPrefix": "10.12.0.0/16",
       "subnet": {
         "cassandra": {
-          "name": "cassandra-subnet",
-          "prefix": "10.2.0.0/24"
+          "name": "cassandra-ne-subnet",
+          "prefix": "10.12.0.0/24"
         }
       },
       "publicIPAddressName": "[concat(variables('vmName'), 'pip')]"
@@ -160,7 +160,7 @@
     "nicName": "[concat(variables('vmName'),'-nic')]",
     "installationScript": "azuredeploy-cassandra-node.sh",
     "installationCLI": "[concat('bash ',variables('installationScript'), ' ', variables('vmName'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'), ' ', variables('location'))]",
-    "avSetName": "avSet",
+    "avSetName": "avSetNe",
     "diskCaching": "ReadWrite",
     "dataDisksDeployment" : "[concat('diskSelection1',variables('vmName'))]"
   },
@@ -221,7 +221,7 @@
     },
 	{
       "apiVersion": "2015-06-15",
-	  "name": "cassandra-nsg",
+	  "name": "cassandra-ne-nsg",
 	  "type": "Microsoft.Network/networkSecurityGroups",
 	  "location": "[variables('location')]",
 	  "properties": {
@@ -236,7 +236,7 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses/', variables('networkSettings').publicIPAddressName)]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups/', 'cassandra-nsg')]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups/', 'cassandra-ne-nsg')]",
         "[resourceId('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
       ],
       "properties": {
@@ -255,7 +255,7 @@
           }
         ],
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', 'cassandra-nsg')]"
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', 'cassandra-ne-nsg')]"
         }
       }
     },

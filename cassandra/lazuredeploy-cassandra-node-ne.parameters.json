@@ -11,17 +11,14 @@
     "nodeSize": {
       "value": "Standard_DS3_v2"
     },
-    "vmBaseName": {
-      "value": "cassandra"
+    "vmName": {
+      "value": "cas-ne1"
     },
     "dataDiskSize": {
       "value": 10
     },
     "numDataDisks": {
       "value": "8"
-    },
-    "nodeCount": {
-      "value": 8
     }
   }
 }
