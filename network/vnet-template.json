@@ -20,7 +20,7 @@
   "resources": [
     {
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[concat(parameters('location'),'-nsg']",
+      "name": "[concat(parameters('location'),'-nsg')]",
       "apiVersion": "2016-03-30",
       "location": "[parameters('location')]",
       "properties": {
@@ -30,10 +30,10 @@
     {
       "apiVersion": "2016-06-01",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "[concat(parameters('location'),'-vnet']",
+      "name": "[concat(parameters('location'),'-vnet')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkSecurityGroups', [concat(parameters('location'),'-nsg']))]"
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
       ],
       "properties": {
         "addressSpace": {
