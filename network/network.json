@@ -16,10 +16,14 @@
           "uri": "[concat(variables('artifactsLocation'), 'vnet-template', '.json')]",
           "contentVersion": "1.0.0.0"
         },
-        "parametersLink": { 
-          "uri": "[concat(variables('artifactsLocation'), 'vnet-parameters-we', '.json')]",
-          "contentVersion": "1.0.0.0"
-        } 
+        "parameters": {
+          "location": {
+            "value": "westeurope"
+          },
+          "addressPrefix": {
+            "value": "10.1.0."
+          }
+        }
       }
     },
     {
@@ -32,10 +36,14 @@
           "uri": "[concat(variables('artifactsLocation'), 'vnet-template', '.json')]",
           "contentVersion": "1.0.0.0"
         },
-        "parametersLink": { 
-          "uri": "[concat(variables('artifactsLocation'), 'vnet-parameters-ne', '.json')]",
-          "contentVersion": "1.0.0.0"
-        } 
+        "parameters": {
+          "location": {
+            "value": "northeurope"
+          },
+          "addressPrefix": {
+            "value": "10.2.0."
+          }
+        }
       }
     }
   ]
