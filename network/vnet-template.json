@@ -45,7 +45,7 @@
             "properties": {
               "addressPrefix": "[variables('BebSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_we_networksecuritygroup_name'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
               }
             }
           },
@@ -54,7 +54,7 @@
             "properties": {
               "addressPrefix": "[variables('CassandraSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_we_networksecuritygroup_name'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
               }
             }
           },
@@ -63,7 +63,7 @@
             "properties": {
               "addressPrefix": "[variables('ElasticsearchSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_we_networksecuritygroup_name'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
               }
             }
           },
@@ -72,7 +72,7 @@
             "properties": {
               "addressPrefix": "[variables('GlueSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_we_networksecuritygroup_name'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
               }
             }
           },
@@ -81,7 +81,7 @@
             "properties": {
               "addressPrefix": "[variables('GatewaySubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_we_networksecuritygroup_name'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
               }
             }
           }
