@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "addressPrefix": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "vnetAddressPrefix": "[concat(parameters('addressPrefix'),'0/24')]",
+    "BebSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'0/27')]",
+    "CassandraSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'32/27')]",
+    "ElasticsearchSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'64/27')]",
+    "GlueSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'96/27')]",
+    "GatewaySubnetAddressPrefix": "[concat(parameters('addressPrefix'),'224/27')]"
+  },
+  "resources": [{
+    "apiVersion": "2016-06-01",
+    "type": "Microsoft.Network/virtualNetworks",
+    "name": "[parameters('name')]",
+    "location": "[parameters('location')]",
+    "properties": {
+      "addressSpace": {
+        "addressPrefixes": ["[variables('vnetAddressPrefix')]"]
+      },
+      "subnets": [
+        {
+          "name": "BebSubnet",
+          "properties": {
+            "addressPrefix": "[variables('BebSubnetAddressPrefix')]"
+          }
+        },
+        {
+          "name": "CassandraSubnet",
+          "properties": {
+            "addressPrefix": "[variables('CassandraSubnetAddressPrefix')]"
+          }
+        },
+        {
+          "name": "ElasticsearchSubnet",
+          "properties": {
+            "addressPrefix": "[variables('ElasticsearchSubnetAddressPrefix')]"
+          }
+        },
+        {
+          "name": "GlueSubnet",
+          "properties": {
+            "addressPrefix": "[variables('GlueSubnetAddressPrefix')]"
+          }
+        },
+        {
+          "name": "GatewaySubnet",
+          "properties": {
+            "addressPrefix": "[variables('GatewaySubnetAddressPrefix')]"
+          }
+        }
+      ]
+    }
+  }]
+}

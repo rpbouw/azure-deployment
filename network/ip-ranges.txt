@@ -1,0 +1,10 @@
+vnet westeurope  10.1.0.0/24
+vnet northeurope  10.2.0.0/24
+
+per vnet:
+BebSubnet             0/27
+CassandraSubnet      32/27
+ElasticsearchSubnet  64/27
+GlueSubnet           96/27
+GatewaySubnet       224/27
+

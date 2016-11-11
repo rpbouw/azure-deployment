@@ -148,6 +148,10 @@
         "cassandra": {
           "name": "cassandra-subnet",
           "prefix": "10.2.0.0/24"
+        },
+        {
+          "name": "GatewaySubnet",
+          "prefix": "10.2.1.0/24"
         }
       },
       "publicIPAddressName": "[concat(variables('vmName'), 'pip')]"
