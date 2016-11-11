@@ -2,24 +2,17 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "name": {
-            "type": "string"
-        },
         "location": {
-            "type": "string"
-        },
-        "vnetName": {
             "type": "string"
         }
     },
     "variables": {
-    	"subnetId": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('vnetName')),'/subnets/GatewaySubnet')]",
-    	"publicIpAddressName": "[concat(parameters('name'),'-pip')]"
+    	"publicIpAddressName": "[concat(parameters('location'), '-vnetgateway-pip')]"
     },
     "resources": [
         {
             "apiVersion": "2015-06-15",
-            "name": "[parameters('name')]",
+            "name": "[concat(parameters('location'), '-vnetgateway')]",
             "type": "Microsoft.Network/virtualNetworkGateways",
             "location": "[parameters('location')]",
             "dependsOn": [
@@ -33,7 +26,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('vnetName')),'/subnets/GatewaySubnet')]"
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', concat(parameters('location'),'-vnet')),'/subnets/GatewaySubnet')]"
                             },
                             "publicIpAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName'))]"

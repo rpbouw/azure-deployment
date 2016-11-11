@@ -45,6 +45,40 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "name": "vnet-gateway-westeurope-deployment",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('artifactsLocation'), 'vnet-gateway-template', '.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "westeurope"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "name": "vnet-gateway-northeurope-deployment",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('artifactsLocation'), 'vnet-gateway-template', '.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "northeurope"
+          }
+        }
+      }
     }
   ]
 }

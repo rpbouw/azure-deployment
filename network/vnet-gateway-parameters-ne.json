@@ -4,12 +4,6 @@
     "parameters": {
         "location": {
             "value": "northeurope"
-        },
-        "name": {
-            "value": "ne-vnetgateway"
-        },
-        "vnetName": {
-            "value": "ne-vnet"
         }
     }
 }

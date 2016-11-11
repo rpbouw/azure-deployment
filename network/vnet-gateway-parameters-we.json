@@ -4,12 +4,6 @@
     "parameters": {
         "location": {
             "value": "westeurope"
-        },
-        "name": {
-            "value": "we-vnetgateway"
-        },
-        "vnetName": {
-            "value": "we-vnet"
         }
     }
 }
