@@ -5,9 +5,6 @@
         "location": {
             "value": "northeurope"
         },
-        "name": {
-            "value": "ne-vnet"
-        },
         "addressPrefix": {
             "value": "10.2.0."
         }

@@ -5,9 +5,6 @@
         "location": {
             "value": "westeurope"
         },
-        "name": {
-            "value": "we-vnet"
-        },
         "addressPrefix": {
             "value": "10.1.0."
         }
