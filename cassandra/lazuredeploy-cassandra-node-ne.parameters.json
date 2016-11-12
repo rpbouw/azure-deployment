@@ -2,6 +2,12 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "location": {
+      "value": "northeurope"
+    },
+    "networkResourceGroup": {
+      "value": "RG-D51-APP-ONLINEDATASTORE-003"
+    },
     "adminUserName": {
       "value": "rabo"
     },

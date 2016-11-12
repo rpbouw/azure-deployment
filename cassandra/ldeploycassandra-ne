@@ -1,6 +1,6 @@
 azure account set RABO-D51-CloudDelivery-Unmanaged
 #azure group create -n RG-D51-APP-ONLINEDATASTORE-002 -l "West Europe"
-azure group deployment create --template-file azuredeploy-cassandra-node-ne.json \
+azure group deployment create --template-file azuredeploy-cassandra-node.json \
     -e lazuredeploy-cassandra-node-ne.parameters.json \
     -g RG-D51-APP-ONLINEDATASTORE-002 \
     -n CassandraDeployment

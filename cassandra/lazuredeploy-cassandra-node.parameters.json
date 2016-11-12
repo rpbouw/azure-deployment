@@ -2,6 +2,12 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "location": {
+      "value": "westeurope"
+    },
+    "networkResourceGroup": {
+      "value": "RG-D51-APP-ONLINEDATASTORE-003"
+    },
     "adminUserName": {
       "value": "rabo"
     },
@@ -12,7 +18,7 @@
       "value": "Standard_DS3_v2"
     },
     "vmName": {
-      "value": "cassandra2"
+      "value": "cas-we1"
     },
     "dataDiskSize": {
       "value": 10
