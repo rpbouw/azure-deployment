@@ -5,7 +5,8 @@
   "variables": {
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/network/",
     "westEuropeAddressPrefix": "10.1.0.",
-    "northEuropeAddressPrefix": "10.2.0."
+    "northEuropeAddressPrefix": "10.2.0.",
+    "sharedKey": "osaidu2j2j2k33lk488dajsadndazxqw328909754jjkkdndckdkododjsjnqazxsfjngtb7363m"
   },
   "resources": [
     {
@@ -85,20 +86,45 @@
       }
     },
     {
-      "apiVersion": "2015-01-01",
-      "name": "connection-deployment",
-      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-06-15",
+      "name": "westeurope-to-northeurope-connection",
+      "type": "Microsoft.Network/connections",
+      "location": "westeurope",
       "dependsOn": [
         "vnet-gateway-westeurope-deployment",
         "vnet-gateway-northeurope-deployment"
       ],
       "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('artifactsLocation'), 'connection-template', '.json')]",
-          "contentVersion": "1.0.0.0"
+        "virtualNetworkGateway1": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', 'westeurope-vnetgateway')]"
         },
-        "parameters": {}
+        "virtualNetworkGateway2": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', 'northeurope-vnetgateway')]"
+        },
+        "connectionType": "Vnet2Vnet",
+        "routingWeight": 0,
+        "sharedKey": "[variables('sharedKey')]"
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "name": "northeurope-to-westeurope-connection",
+      "type": "Microsoft.Network/connections",
+      "location": "northeurope",
+      "dependsOn": [
+        "vnet-gateway-westeurope-deployment",
+        "vnet-gateway-northeurope-deployment"
+      ],
+      "properties": {
+        "virtualNetworkGateway1": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', 'northeurope-vnetgateway')]"
+        },
+        "virtualNetworkGateway2": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', 'westeurope-vnetgateway')]"
+        },
+        "connectionType": "Vnet2Vnet",
+        "routingWeight": 0,
+        "sharedKey": "[variables('sharedKey')]"
       }
     }
   ]
