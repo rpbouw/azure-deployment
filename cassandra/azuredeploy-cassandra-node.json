@@ -306,19 +306,6 @@
           }
         }
       }
-    },
-    {
-      "apiVersion": "2015-01-01",
-      "name": "networkDeployment",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('artifactsLocation'), 'network/network.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {}
-      }
     }
   ]
 }

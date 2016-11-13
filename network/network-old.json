@@ -3,11 +3,26 @@
   "contentVersion": "1.0.0.0",
   "parameters": {},
   "variables": {
-    "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/network/",
-    "westEuropeAddressPrefix": "10.1.0.",
-    "northEuropeAddressPrefix": "10.2.0."
+    "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/network/"
   },
   "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "name": "connection-deployment",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "vnet-gateway-westeurope-deployment",
+        "vnet-gateway-northeurope-deployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('artifactsLocation'), 'connection-template', '.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {}
+      }
+    },
     {
       "apiVersion": "2015-01-01",
       "name": "vnet-westeurope-deployment",
@@ -23,7 +38,7 @@
             "value": "westeurope"
           },
           "addressPrefix": {
-            "value": "[variables('westEuropeAddressPrefix')]"
+            "value": "10.1.0."
           }
         }
       }
@@ -43,7 +58,7 @@
             "value": "northeurope"
           },
           "addressPrefix": {
-            "value": "[variables('northEuropeAddressPrefix')]"
+            "value": "10.2.0."
           }
         }
       }
@@ -82,23 +97,6 @@
             "value": "northeurope"
           }
         }
-      }
-    },
-    {
-      "apiVersion": "2015-01-01",
-      "name": "connection-deployment",
-      "type": "Microsoft.Resources/deployments",
-      "dependsOn": [
-        "vnet-gateway-westeurope-deployment",
-        "vnet-gateway-northeurope-deployment"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('artifactsLocation'), 'connection-template', '.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {}
       }
     }
   ]
