@@ -10,7 +10,6 @@
     },
     "adminUserName": {
       "type": "string",
-      "defaultValue": "azureuser",
       "metadata": {
         "description": "User name for the Virtual Machine. Pick a valid username otherwise there will be a BadRequest error."
       }
@@ -90,14 +89,12 @@
         "Standard_GS4",
         "Standard_GS5"
       ],
-      "defaultValue": "Standard_DS2_v3",
       "metadata": {
         "description": "Size of the  node."
       }
     },
     "dataDiskSize": {
       "type": "int",
-      "defaultValue": 10,
       "metadata": {
         "description": "The size in GB of each data disk that is attached to the VM.  A MDADM RAID0  is created with all data disks auto-mounted,  that is dataDiskSize * dataDiskCount in size n the Storage ."
       }
@@ -110,7 +107,6 @@
     },
     "numDataDisks": {
       "type": "string",
-      "defaultValue": "4",
       "allowedValues": [
         "0",
         "1",
@@ -185,9 +181,6 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
       "location": "[parameters('location')]",
-      "dependsOn": [
-        "networkDeployment"
-      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -201,7 +194,7 @@
           }
         ],
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', concat(parameters('location'),'-nsg'))]"
+          "id": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/networkSecurityGroups/', concat(parameters('location'),'-nsg'))]"
         }
       }
     },

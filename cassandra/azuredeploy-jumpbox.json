@@ -14,48 +14,68 @@
         "description": "This field must be a valid SSH public key. ssh with this RSA public key"
       }
     },
-    "dnsLabelPrefix": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
-      }
+    "networkResourceGroup": {
+      "type": "string"
     }
   },
   "variables": {
     "armApiVersion": "2016-09-01",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/cassandra/",
-    "location": "[resourceGroup().location]",
-    "vmStorageAccountContainerName": "disks",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id),'cassandra')]",
+    "location": "westeurope",
+    "vmStorageAccountContainerName": "jbdisks",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id),'datastorejb')]",
     "storageAccountType": "Standard_LRS",
     "vmimage": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
       "sku": "16.04.0-LTS"
     },
-    "networkSettings": {
-      "virtualNetworkName": "cassandra-vnet",
-      "addressPrefix": "10.2.0.0/16",
-      "subnet": {
-        "cassandra": {
-          "name": "cassandra-subnet",
-          "prefix": "10.2.0.0/24"
-        }
-      },
-      "privateIPAddress": "10.2.0.254",
-      "publicIPAddressName": "cassandra-ip-jumpbox",
-      "publicIPAddressType": "Dynamic"
-    },
-    "vmName": "cassandra-jb",
+    "vmName": "datastore-jb",
     "vmSize": "Standard_A1",
-    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('networkSettings').virtualNetworkName)]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('networkSettings').subnet.cassandra.name)]",
+    "vnetID": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/virtualNetworks',concat(parameters('location'),'-vnet'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/','JumpboxSubnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(variables('vmName'),'-nic')]",
-    "installationScript": "azuredeploy-cassandra-jumpbox.sh",
+    "installationScript": "azuredeploy-jumpbox.sh",
     "installationCLI": "[concat('bash ',variables('installationScript'), ' /data 0')]"
   },
   "resources": [
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "['jumpbox-nsg')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "apiVersion": "[variables('armApiVersion')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfigjumpbox",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','jumpbox-pip')]"
+              },
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', 'jumpbox-nsg')]"
+        }
+      }
+    },
     {
       "apiVersion": "2016-05-01",
       "type": "Microsoft.Storage/storageAccounts",
@@ -66,80 +86,6 @@
       },
       "kind": "Storage",
       "properties": {}
-    },
-    {
-      "apiVersion": "[variables('armApiVersion')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('networkSettings').publicIPAddressName]",
-      "location": "[variables('location')]",
-      "properties": {
-        "publicIPAllocationMethod": "[variables('networkSettings').publicIPAddressType]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
-        }
-      }
-    },
-    {
-      "apiVersion": "[variables('armApiVersion')]",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('networkSettings').virtualNetworkName]",
-      "location": "[variables('location')]",
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('networkSettings').addressPrefix]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[variables('networkSettings').subnet.cassandra.name]",
-            "properties": {
-              "addressPrefix": "[variables('networkSettings').subnet.cassandra.prefix]"
-            }
-          }
-        ]
-      }
-    },
-	{
-      "apiVersion": "2015-06-15",
-	  "name": "cassandra-jb-nsg",
-	  "type": "Microsoft.Network/networkSecurityGroups",
-	  "location": "[variables('location')]",
-	  "properties": {
-	    "securityRules": [],
-	    "networkInterfaces": []
-	  }
-	},
-    {
-      "apiVersion": "[variables('armApiVersion')]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('nicName')]",
-      "location": "[variables('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses/', variables('networkSettings').publicIPAddressName)]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups/', 'cassandra-jb-nsg')]",
-        "[resourceId('Microsoft.Network/virtualNetworks/', variables('networkSettings').virtualNetworkName)]"
-      ],
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfigjumpbox",
-            "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('networkSettings').privateIPAddress]", 
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('networkSettings').publicIPAddressName)]"
-              },
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              }
-            }
-          }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', 'cassandra-jb-nsg')]"
-        }
-      }
     },
     {
       "apiVersion": "2016-03-30",
@@ -225,11 +171,7 @@
   "outputs": {
     "hostname": {
       "type": "string",
-      "value": "[reference(variables('networkSettings').publicIPAddressName).dnsSettings.fqdn]"
-    },
-    "sshCommand": {
-      "type": "string",
-      "value": "[concat('ssh ', parameters('adminUsername'), '@', reference(variables('networkSettings').publicIPAddressName).dnsSettings.fqdn)]"
+      "value": "[resourceId('Microsoft.Network/publicIPAddresses','jumpbox-pip').dnsSettings.fqdn]"
     }
   }
 }

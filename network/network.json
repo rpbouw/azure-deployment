@@ -3,12 +3,26 @@
   "contentVersion": "1.0.0.0",
   "parameters": {},
   "variables": {
+    "jumpboxPublicIPName": "jumpbox-pip",
+    "jumpboxDomainLabelPrefix": "rabobankjb",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/network/",
     "westEuropeAddressPrefix": "10.1.0.",
     "northEuropeAddressPrefix": "10.2.0.",
     "sharedKey": "osaidu2j2j2k33lk488dajsadndazxqw328909754jjkkdndckdkododjsjnqazxsfjngtb7363m"
   },
   "resources": [
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('jumpboxPublicIPName')]",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('jumpboxDomainLabelPrefix')]"
+        }
+      }
+    },
     {
       "apiVersion": "2015-01-01",
       "name": "vnet-westeurope-deployment",
