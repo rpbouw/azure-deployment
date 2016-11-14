@@ -10,9 +10,6 @@
     },
     "networkResourceGroup": {
       "value": "RG-D51-APP-ONLINEDATASTORE-003"
-    },
-    "dnsLabelPrefix": {
-      "value": "rabobankc"
     }
   }
 }
