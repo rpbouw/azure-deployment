@@ -167,11 +167,5 @@
         }
       }
     }
-  ],
-  "outputs": {
-    "hostname": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/publicIPAddresses','jumpbox-pip').dnsSettings.fqdn]"
-    }
-  }
+  ]
 }
