@@ -150,7 +150,7 @@
     "nicName": "[concat(variables('vmName'),'-nic')]",
     "installationScript": "azuredeploy-cassandra-node.sh",
     "installationCLI": "[concat('bash ',variables('installationScript'), ' ', variables('vmName'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'), ' ', parameters('location'))]",
-    "avSetName": "avSet",
+    "avSetName": "[concat(parameters('location'),'AvSet')]",
     "diskCaching": "ReadWrite",
     "dataDisksDeployment" : "[concat('diskSelection1',variables('vmName'))]"
   },

@@ -25,6 +25,15 @@
       "apiVersion": "2016-03-30",
       "location": "[parameters('location')]",
       "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "jumpbox-nsg",
+      "location": "westeurope",
+      "properties": {
         "securityRules": [
           {
             "name": "allow-ssh",
@@ -96,7 +105,7 @@
             "properties": {
               "addressPrefix": "[variables('JumpboxSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'jumpbox-nsg')]"
               }
             }
           },

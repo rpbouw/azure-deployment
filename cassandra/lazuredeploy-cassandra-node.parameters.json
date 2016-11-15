@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "location": {
-      "value": "westeurope"
+      "value": "northeurope"
     },
     "networkResourceGroup": {
       "value": "RG-D51-APP-ONLINEDATASTORE-003"
@@ -18,7 +18,7 @@
       "value": "Standard_DS3_v2"
     },
     "vmName": {
-      "value": "cas-we1"
+      "value": "cas-ne1"
     },
     "dataDiskSize": {
       "value": 10
