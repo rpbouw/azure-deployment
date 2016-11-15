@@ -25,7 +25,21 @@
       "apiVersion": "2016-03-30",
       "location": "[parameters('location')]",
       "properties": {
-        "securityRules": []
+        "securityRules": [
+          {
+            "name": "allow-ssh",
+            "properties": {
+              "priority": 1000,
+              "sourceAddressPrefix": "*",
+              "protocol": "TCP",
+              "destinationPortRange": "22",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*"
+            }
+          }
+        ]
       }
     },
     {
