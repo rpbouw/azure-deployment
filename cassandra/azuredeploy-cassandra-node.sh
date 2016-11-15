@@ -154,7 +154,7 @@ install_cassandra()
   sed -i s/"\/var\/lib\/cassandra\/data"/"\/data"/g /etc/cassandra/cassandra.yaml
   
   sed -i s/"cluster_name:.*\$"/"cluster_name: 'DatastoreTest'"/g /etc/cassandra/cassandra.yaml
-  sed -i s/"- seeds:.*\$"/"- seeds: \"10.2.0.4,10.2.0.5\""/g /etc/cassandra/cassandra.yaml
+  sed -i s/"- seeds:.*\$"/"- seeds: \"10.1.0.36,10.1.0.37\""/g /etc/cassandra/cassandra.yaml
   
   sed -i s/"endpoint_snitch:.*\$"/"endpoint_snitch: GossipingPropertyFileSnitch"/g /etc/cassandra/cassandra.yaml
   
