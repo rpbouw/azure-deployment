@@ -3,4 +3,4 @@ azure account set RABO-D51-CloudDelivery-Unmanaged
 azure group deployment create --template-file azuredeploy-cassandra-node.json \
     -e lazuredeploy-cassandra-node.parameters.json \
     -g RG-D51-APP-ONLINEDATASTORE-002 \
-    -n CassandraNodeDeployment
+    -n CassandraNodeDeploymentWE
