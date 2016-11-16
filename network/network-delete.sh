@@ -1,5 +1,8 @@
 azure account set RABO-D51-CloudDelivery-Unmanaged
 
+azure network vpn-connection delete -g RG-D51-APP-ONLINEDATASTORE-003 -q westeurope-to-northeurope-connection
+azure network vpn-connection delete -g RG-D51-APP-ONLINEDATASTORE-003 -q northeurope-to-westeurope-connection
+
 azure network vpn-gateway delete northeurope-vnetgateway -g RG-D51-APP-ONLINEDATASTORE-003 -q
 azure network vpn-gateway delete westeurope-vnetgateway -g RG-D51-APP-ONLINEDATASTORE-003 -q
 
