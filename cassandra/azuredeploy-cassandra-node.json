@@ -135,7 +135,7 @@
     "armApiVersion": "2016-09-01",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/",
     "vmStorageAccountContainerName": "disks",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id),'cassandra')]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('location')),'cassandra')]",
     "storageAccountType": "Standard_LRS",
     "vmimage": {
       "publisher": "Canonical",
