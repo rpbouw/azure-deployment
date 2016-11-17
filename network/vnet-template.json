@@ -113,9 +113,6 @@
             "name": "GatewaySubnet",
             "properties": {
               "addressPrefix": "[variables('GatewaySubnetAddressPrefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
-              }
             }
           }
         ]
