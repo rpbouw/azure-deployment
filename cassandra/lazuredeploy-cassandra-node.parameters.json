@@ -5,6 +5,9 @@
     "location": {
       "value": "westeurope"
     },
+    "vmName": {
+      "value": "cas-we1"
+    },
     "networkResourceGroup": {
       "value": "RG-D51-APP-ONLINEDATASTORE-003"
     },
@@ -17,11 +20,8 @@
     "nodeSize": {
       "value": "Standard_DS3_v2"
     },
-    "vmName": {
-      "value": "cas-we1"
-    },
     "dataDiskSize": {
-      "value": 10
+      "value": 100
     },
     "numDataDisks": {
       "value": "8"
