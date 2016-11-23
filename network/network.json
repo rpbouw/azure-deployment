@@ -6,8 +6,28 @@
     "jumpboxPublicIPName": "jumpbox-pip",
     "jumpboxDomainLabelPrefix": "rabobankjb",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/network/",
-    "westEuropeAddressPrefix": "10.1.0.",
-    "northEuropeAddressPrefix": "10.2.0.",
+    
+    "northEuropeAddressPrefix": "10.253.0.",
+    "neLastOctetOffset": 0,
+    "westEuropeAddressPrefix": "10.253.0.",
+    "weLastOctetOffset": 64,
+
+    "vnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),neLastOctetOffset,'/26')]",
+    "BebSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),neLastOctetOffset,'/29')]",
+    "CassandraSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,8),'/29')]",
+    "ElasticsearchSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,16),'/29')]",
+    "GlueSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,32),'/29')]",
+    "JumpboxSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,40),'/29')]",
+    "GatewaySubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,56),'/29')]",
+
+    "vnetAddressPrefixWE": "[concat(parameters('northEuropeAddressPrefix'),weLastOctetOffset,'/26')]",
+    "BebSubnetAddressPrefixWE": "[concat(parameters('northEuropeAddressPrefix'),weLastOctetOffset,'/29')]",
+    "CassandraSubnetAddressPrefixWE": "[concat(parameters('northEuropeAddressPrefix'),add(weLastOctetOffset,8),'/29')]",
+    "ElasticsearchSubnetAddressPrefixWE": "[concat(parameters('northEuropeAddressPrefix'),add(weLastOctetOffset,16),'/29')]",
+    "GlueSubnetAddressPrefixWE": "[concat(parameters('northEuropeAddressPrefix'),add(weLastOctetOffset,32),'/29')]",
+    "JumpboxSubnetAddressPrefixWE": "[concat(parameters('northEuropeAddressPrefix'),add(weLastOctetOffset,40),'/29')]",
+    "GatewaySubnetAddressPrefixWE": "[concat(parameters('northEuropeAddressPrefix'),add(weLastOctetOffset,56),'/29')]",
+
     "sharedKey": "osaidu2j2j2k33lk488dajsadndazxqw328909754jjkkdndckdkododjsjnqazxsfjngtb7363m"
   },
   "resources": [
