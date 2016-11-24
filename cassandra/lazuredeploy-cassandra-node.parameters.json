@@ -6,7 +6,7 @@
       "value": "westeurope"
     },
     "vmName": {
-      "value": "cas-we1"
+      "value": "cas-we2"
     },
     "networkResourceGroup": {
       "value": "RG-D01-APP-ONLINEDATASTORE-003"

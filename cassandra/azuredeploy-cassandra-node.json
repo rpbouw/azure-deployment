@@ -192,10 +192,7 @@
               }
             }
           }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/networkSecurityGroups/', concat(parameters('location'),'-nsg'))]"
-        }
+        ]
       }
     },
     {
