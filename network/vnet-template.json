@@ -7,6 +7,9 @@
     },
     "addressPrefix": {
       "type": "string"
+    },
+    "lastOctetOffset": {
+      "type": "integer"
     }
   },
   "variables": {
@@ -17,6 +20,15 @@
     "GlueSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'96/29')]",
     "JumpboxSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'104/29')]",
     "GatewaySubnetAddressPrefix": "[concat(parameters('addressPrefix'),'112/29')]"
+
+    "vnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),neLastOctetOffset,'/26')]",
+    "BebSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),neLastOctetOffset,'/29')]",
+    "CassandraSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,8),'/29')]",
+    "ElasticsearchSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,16),'/29')]",
+    "GlueSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,32),'/29')]",
+    "JumpboxSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,40),'/29')]",
+    "GatewaySubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,56),'/29')]",
+
   },
   "resources": [
     {

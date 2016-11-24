@@ -6,7 +6,7 @@
       "value": "northeurope"
     },
     "networkResourceGroup": {
-      "value": "RG-D51-APP-ONLINEDATASTORE-003"
+      "value": "RG-D01-APP-ONLINEDATASTORE-003"
     },
     "adminUserName": {
       "value": "rabo"

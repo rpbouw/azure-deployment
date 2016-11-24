@@ -9,7 +9,7 @@
       "value": "cas-we1"
     },
     "networkResourceGroup": {
-      "value": "RG-D51-APP-ONLINEDATASTORE-003"
+      "value": "RG-D01-APP-ONLINEDATASTORE-003"
     },
     "adminUserName": {
       "value": "rabo"
@@ -21,7 +21,7 @@
       "value": "Standard_DS3_v2"
     },
     "dataDiskSize": {
-      "value": 100
+      "value": 500
     },
     "numDataDisks": {
       "value": "8"
