@@ -1,21 +1,13 @@
-Fixed config from Cloud Provisioning:
-Available IP-range is                   10.253.0.0/25    128 addresses
-Subnet for VPN Rabo-Azure westeurope is 10.253.0.112/29    8 addresses
+DEV westeurope-vnet                     10.253.0.0/25    128 addresses
+DEV northeurope-vnet                    10.253.16.0/25   128 addresses
 
-Chosen config based on this:
+PROD westeurope-vnet                    10.253.9.0/25    128 addresses
+PROD northeurope-vnet                   10.253.25.0/25   128 addresses
 
-VNET westeurope                         10.253.0.64/26    64 addresses
-
-VNET northeurope                        10.253.0.0/26     64 addresses
-
-minimum subnet is /29, 8 addresses, of which we can use 4 (we cannot use the first 4 addresses per subnet)
-BEB                                     +0/29
-Cassandra                               +8/29
-Elasticsearch                           +16/29
-spare range                             +24/29
-Glue                                    +32/29
-Jumpbox                                 +40/29
-Reserved for rabo-azure gateway         +48/29
-Gateway between azure regions           +56/29
-
-So 4 addresses per region per subnet, max 8 VM's (2 regions) for every cluster in test.
+All VNET's have these subnets:
+BebSubnet                               0/27   32(27) addresses
+CassandraSubnet                         32/27  32(27) addresses
+ElasticsearchSubnet                     64/27  32(27) addresses
+GlueSubnet                              96/28  16(11) addresses
+GatewaySubnet                           112/29 8(3) addresses                           
+OperationsSubnet                        120/29 8(3) addresses

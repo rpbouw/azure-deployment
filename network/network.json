@@ -3,15 +3,11 @@
   "contentVersion": "1.0.0.0",
   "parameters": {},
   "variables": {
-    "jumpboxPublicIPName": "jumpbox-pip",
-    "jumpboxDomainLabelPrefix": "rabobankjb",
+    "jumpboxPublicIPName": "datastore-jb-pip",
+    "jumpboxDomainLabelPrefix": "datastore-jb",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/network/",
-    
-    "northEuropeAddressPrefix": "10.253.0.",
-    "neLastOctetOffset": 0,
     "westEuropeAddressPrefix": "10.253.0.",
-    "weLastOctetOffset": 64,
-
+    "northEuropeAddressPrefix": "10.253.16.",
     "sharedKey": "osaidu2j2j2k33lk488dajsadndazxqw328909754jjkkdndckdkododjsjnqazxsfjngtb7363m"
   },
   "resources": [
@@ -43,9 +39,6 @@
           },
           "addressPrefix": {
             "value": "[variables('westEuropeAddressPrefix')]"
-          },
-          "lastOctetOffset": {
-            "value": "[variables('weLastOctetOffset')]"
           }
         }
       }
@@ -66,9 +59,6 @@
           },
           "addressPrefix": {
             "value": "[variables('northEuropeAddressPrefix')]"
-          },
-          "lastOctetOffset": {
-            "value": "[variables('neLastOctetOffset')]"
           }
         }
       }

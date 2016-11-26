@@ -7,9 +7,6 @@
     },
     "addressPrefix": {
       "type": "string"
-    },
-    "lastOctetOffset": {
-      "type": "integer"
     }
   },
   "variables": {
@@ -17,18 +14,9 @@
     "BebSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'0/27')]",
     "CassandraSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'32/27')]",
     "ElasticsearchSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'64/27')]",
-    "GlueSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'96/29')]",
-    "JumpboxSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'104/29')]",
-    "GatewaySubnetAddressPrefix": "[concat(parameters('addressPrefix'),'112/29')]"
-
-    "vnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),neLastOctetOffset,'/26')]",
-    "BebSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),neLastOctetOffset,'/29')]",
-    "CassandraSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,8),'/29')]",
-    "ElasticsearchSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,16),'/29')]",
-    "GlueSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,32),'/29')]",
-    "JumpboxSubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,40),'/29')]",
-    "GatewaySubnetAddressPrefixNE": "[concat(parameters('northEuropeAddressPrefix'),add(neLastOctetOffset,56),'/29')]",
-
+    "GlueSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'96/28')]",
+    "GatewaySubnetAddressPrefix": "[concat(parameters('addressPrefix'),'112/29')]",
+    "OperationsSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'120/29')]"
   },
   "resources": [
     {
@@ -43,8 +31,8 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "jumpbox-nsg",
-      "location": "westeurope",
+      "name": "operations-nsg",
+      "location": "[parameters('location')]",
       "properties": {
         "securityRules": [
           {
@@ -113,11 +101,11 @@
             }
           },
           {
-            "name": "JumpboxSubnet",
+            "name": "OperationsSubnet",
             "properties": {
               "addressPrefix": "[variables('JumpboxSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'jumpbox-nsg')]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'operations-nsg')]"
               }
             }
           },
