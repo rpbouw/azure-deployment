@@ -31,7 +31,7 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "operations-nsg",
+      "name": "[concat(parameters('location'),'-operations-nsg')]",
       "location": "[parameters('location')]",
       "properties": {
         "securityRules": [
@@ -105,7 +105,7 @@
             "properties": {
               "addressPrefix": "[variables('OperationsSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'operations-nsg')]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-operations-nsg')]"
               }
             }
           },
