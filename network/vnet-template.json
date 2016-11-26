@@ -103,7 +103,7 @@
           {
             "name": "OperationsSubnet",
             "properties": {
-              "addressPrefix": "[variables('JumpboxSubnetAddressPrefix')]",
+              "addressPrefix": "[variables('OperationsSubnetAddressPrefix')]",
               "networkSecurityGroup": {
                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'operations-nsg')]"
               }
