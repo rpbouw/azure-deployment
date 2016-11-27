@@ -12,6 +12,7 @@ DEBIAN_FRONTEND=noninteractive apt-get update
 #install NTP
 DEBIAN_FRONTEND=noninteractive apt-get install -y ntp
   
+DEBIAN_FRONTEND=noninteractive apt-get install -y unzip zip
   
 #install java
 DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:openjdk-r/ppa

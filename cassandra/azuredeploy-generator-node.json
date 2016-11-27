@@ -95,7 +95,7 @@
       "metadata": {
         "description": "Odd numbers will be deployed in westeurope, even numbers in northeurope."
       }
-    },
+    }
   },
   "variables": {
     "locations": ["northeurope","westeurope"],
