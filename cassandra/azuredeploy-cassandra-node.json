@@ -99,7 +99,7 @@
     "vmNumber": {
       "type": "int",
       "metadata": {
-        "description": "Odd numbers will be deployed in northeurope, even numbers in westeurope."
+        "description": "Odd numbers will be deployed in westeurope, even numbers in northeurope."
       }
     },
     "numDataDisks": {
@@ -129,7 +129,7 @@
     }
   },
   "variables": {
-    "locations": ["westeurope","northeurope"],
+    "locations": ["northeurope","westeurope"],
     "location": "[variables('locations')[mod(parameters('vmNumber'),2)]]",    
     "armApiVersion": "2016-09-01",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/",
@@ -141,7 +141,7 @@
       "offer": "UbuntuServer",
       "sku": "16.04.0-LTS"
     },
-    "vmName": "[concat('cas',parameters('vmNumber'))]",
+    "vmName": "[concat('das-cas',parameters('vmNumber'))]",
     "vmSize": "[parameters('nodeSize')]",
     "vnetID": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/virtualNetworks',concat(variables('location'),'-vnet'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/','CassandraSubnet')]",
