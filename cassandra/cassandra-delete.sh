@@ -3,7 +3,7 @@ if [ $# != 1 ]; then
   exit 1
 fi
 
-VM=cas$1
+VM=das-cas$1
 
 azure account set RABO-D01-CloudDelivery
 
