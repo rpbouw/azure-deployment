@@ -4,12 +4,12 @@ if [ $# != 1 ]; then
 fi
 
 vmNumber=$1
-sed s/"\"vmNumber\": { \"value\": 1 }"/"\"vmNumber\": { \"value\": $vmNumber }"/g lazuredeploy-cassandra-node.parameters.json >lazuredeploy-cassandra-node.parameters.$vmNumber.json
+sed s/"\"vmNumber\": { \"value\": 1 }"/"\"vmNumber\": { \"value\": $vmNumber }"/g lazuredeploy-generator-node.parameters.json >lazuredeploy-generator-node.parameters.$vmNumber.json
 
 azure account set RABO-D01-CloudDelivery
-azure group deployment create --template-file azuredeploy-cassandra-node.json \
-    -e lazuredeploy-cassandra-node.parameters.$vmNumber.json \
+azure group deployment create --template-file azuredeploy-generator-node.json \
+    -e lazuredeploy-generator-node.parameters.$vmNumber.json \
     -g RG-D01-APP-ONLINEDATASTORE-002 \
-    -n CassandraNodeDeployment$vmNumber
+    -n GeneratorNodeDeployment$vmNumber
 
-rm lazuredeploy-cassandra-node.parameters.$vmNumber.json
+rm lazuredeploy-generator-node.parameters.$vmNumber.json
