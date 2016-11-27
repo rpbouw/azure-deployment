@@ -2,9 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "location": {
-      "type": "string"
-    },
     "networkResourceGroup": {
       "type": "string"
     },
@@ -99,10 +96,10 @@
         "description": "The size in GB of each data disk that is attached to the VM.  A MDADM RAID0  is created with all data disks auto-mounted,  that is dataDiskSize * dataDiskCount in size n the Storage ."
       }
     },
-    "vmName": {
-      "type": "string",
+    "vmNumber": {
+      "type": "int",
       "metadata": {
-        "description": "The Name of the VM."
+        "description": "Odd numbers will be deployed in northeurope, even numbers in westeurope."
       }
     },
     "numDataDisks": {
@@ -132,25 +129,27 @@
     }
   },
   "variables": {
+    "locations": ["westeurope","northeurope"],
+    "location": "[variables('locations')[mod(parameters('vmNumber'),2)]]",    
     "armApiVersion": "2016-09-01",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/",
     "vmStorageAccountContainerName": "disks",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('location')),'cassandra')]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id, variables('location')),'cassandra')]",
     "storageAccountType": "Standard_LRS",
     "vmimage": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
       "sku": "16.04.0-LTS"
     },
-    "vmName": "[parameters('vmName')]",
+    "vmName": "[concat('cas',parameters('vmNumber'))]",
     "vmSize": "[parameters('nodeSize')]",
-    "vnetID": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/virtualNetworks',concat(parameters('location'),'-vnet'))]",
+    "vnetID": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/virtualNetworks',concat(variables('location'),'-vnet'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/','CassandraSubnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(variables('vmName'),'-nic')]",
     "installationScript": "azuredeploy-cassandra-node.sh",
-    "installationCLI": "[concat('bash ',variables('installationScript'), ' ', variables('vmName'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'), ' ', parameters('location'))]",
-    "avSetName": "[concat(parameters('location'),'AvSet')]",
+    "installationCLI": "[concat('bash ',variables('installationScript'), ' ', variables('vmName'), ' ', parameters('numDataDisks'), ' ', parameters('adminUserName'), ' ', variables('location'))]",
+    "avSetName": "[concat(variables('location'),'AvSet')]",
     "diskCaching": "ReadWrite",
     "dataDisksDeployment" : "[concat('diskSelection1',variables('vmName'))]"
   },
@@ -159,7 +158,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('avSetName')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "properties": {
         "platformUpdateDomainCount": "18",
         "platformFaultDomainCount": "3"
@@ -169,7 +168,7 @@
       "apiVersion": "2016-05-01",
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "sku": {
         "name": "[variables('storageAccountType')]"
       },
@@ -180,7 +179,7 @@
       "apiVersion": "[variables('armApiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "properties": {
         "ipConfigurations": [
           {
@@ -199,7 +198,7 @@
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmName')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
@@ -248,7 +247,7 @@
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), '/Installation')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
       ],

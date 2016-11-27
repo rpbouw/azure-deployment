@@ -33,7 +33,7 @@
     "vmName": "datastore-jb",
     "vmSize": "Standard_A1",
     "vnetID": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/virtualNetworks',concat(variables('location'),'-vnet'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/','CassandraSubnet')]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/','OperationsSubnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(variables('vmName'),'-nic')]",
     "installationScript": "azuredeploy-jumpbox.sh",
@@ -54,7 +54,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','jumpbox-pip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','datastore-jb-pip')]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"

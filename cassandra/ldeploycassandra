@@ -1,5 +1,13 @@
+if [ $# != 1 ]; then
+  echo "Usage: $0 vmNumber"
+  exit 1
+fi
+
+vmNumber=$1
+sed s/"\"vmNumber\": { \"value\": 1 }"/"\"vmNumber\": { \"value\": $vmNumber }"/g lazuredeploy-cassandra-node.parameters.json >lazuredeploy-cassandra-node.parameters.$vmNumber.json
+
 azure account set RABO-D01-CloudDelivery
 azure group deployment create --template-file azuredeploy-cassandra-node.json \
-    -e lazuredeploy-cassandra-node.parameters.json \
+    -e lazuredeploy-cassandra-node.parameters.$vmNumber.json \
     -g RG-D01-APP-ONLINEDATASTORE-002 \
-    -n CassandraNodeDeploymentWE
+    -n CassandraNodeDeployment$vmNumber
