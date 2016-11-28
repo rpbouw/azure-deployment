@@ -86,6 +86,8 @@ EOF
     mkfs -t ext4 /dev/md10
     echo "/dev/md10 $mountPoint ext4 defaults,nofail 0 2" >> /etc/fstab
     mount /dev/md10
+    mdadm --detail --scan | tee -a /etc/mdadm/mdadm.conf
+    update-initramfs -u
   fi
 }
 
