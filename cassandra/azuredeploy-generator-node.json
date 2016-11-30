@@ -118,20 +118,9 @@
     "nicName": "[concat(variables('vmName'),'-nic')]",
     "installationScript": "azuredeploy-generator-node.sh",
     "installationCLI": "[concat('bash ',variables('installationScript'))]",
-    "avSetName": "[concat(variables('location'),'AvSet')]",
     "diskCaching": "ReadWrite"
   },
   "resources": [
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('avSetName')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "platformUpdateDomainCount": "18",
-        "platformFaultDomainCount": "3"
-      }
-    },
     {
       "apiVersion": "2016-05-01",
       "type": "Microsoft.Storage/storageAccounts",
@@ -169,13 +158,9 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
-        "[concat('Microsoft.Compute/availabilitySets/', variables('avSetName'))]"
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {
-        "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('avSetName'))]"
-        },
         "hardwareProfile": {
           "vmSize": "[parameters('nodeSize')]"
         },
