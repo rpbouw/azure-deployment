@@ -113,7 +113,7 @@
     "vmName": "[concat('das-gen',parameters('vmNumber'))]",
     "vmSize": "[parameters('nodeSize')]",
     "vnetID": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/virtualNetworks',concat(variables('location'),'-vnet'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/','OperationsSubnet')]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/','CassandraSubnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(variables('vmName'),'-nic')]",
     "installationScript": "azuredeploy-generator-node.sh",
