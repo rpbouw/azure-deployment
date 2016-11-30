@@ -3,6 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vmNumber": { "value": 1 },
+    "appName": { "value": "filler" },
     "networkResourceGroup": {
       "value": "RG-D01-APP-ONLINEDATASTORE-003"
     },
