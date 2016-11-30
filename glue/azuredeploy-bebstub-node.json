@@ -209,7 +209,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[concat(variables('artifactsLocation'), 'cassandra/', variables('installationScript'))]"
+            "[concat(variables('artifactsLocation'), 'glue/', variables('installationScript'))]"
           ],
           "commandToExecute": "[variables('installationCLI')]"
         }
