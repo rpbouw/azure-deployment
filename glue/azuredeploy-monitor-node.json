@@ -89,34 +89,27 @@
       "metadata": {
         "description": "Size of the  node."
       }
-    },
-    "vmNumber": {
-      "type": "int",
-      "metadata": {
-        "description": "Odd numbers will be deployed in westeurope, even numbers in northeurope."
-      }
     }
   },
   "variables": {
-    "locations": ["northeurope","westeurope"],
-    "location": "[variables('locations')[mod(parameters('vmNumber'),2)]]",    
+    "location": "westeurope",    
     "armApiVersion": "2016-09-01",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/",
     "vmStorageAccountContainerName": "disks",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id, variables('location')),'generator')]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id, variables('location')),'monitor')]",
     "storageAccountType": "Standard_LRS",
     "vmimage": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
       "sku": "16.04.0-LTS"
     },
-    "vmName": "[concat('das-gen',parameters('vmNumber'))]",
+    "vmName": "das-monitor",
     "vmSize": "[parameters('nodeSize')]",
     "vnetID": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/virtualNetworks',concat(variables('location'),'-vnet'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/','CassandraSubnet')]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/','OperationsSubnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(variables('vmName'),'-nic')]",
-    "installationScript": "azuredeploy-generator-node.sh",
+    "installationScript": "azuredeploy-monitor-node.sh",
     "installationCLI": "[concat('bash ',variables('installationScript'))]",
     "diskCaching": "ReadWrite"
   },
@@ -209,7 +202,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[concat(variables('artifactsLocation'), 'cassandra/', variables('installationScript'))]"
+            "[concat(variables('artifactsLocation'), 'glue/', variables('installationScript'))]"
           ],
           "commandToExecute": "[variables('installationCLI')]"
         }
