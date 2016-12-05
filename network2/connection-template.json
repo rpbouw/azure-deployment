@@ -1,0 +1,52 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "sharedKey": "osaidu2j2j2k33lk488dajsadndazxqw328909754jjkkdndckdkododjsjnqazxsfjngtb7363m"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "name": "westeurope-to-northeurope-connection",
+      "type": "Microsoft.Network/connections",
+      "location": "westeurope",
+      "dependsOn": [
+        "Microsoft.Network/virtualNetworkGateways/westeurope-vnetgateway",
+        "Microsoft.Network/virtualNetworkGateways/northeurope-vnetgateway"
+      ],
+      "properties": {
+        "virtualNetworkGateway1": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', 'westeurope-vnetgateway')]"
+        },
+        "virtualNetworkGateway2": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', 'northeurope-vnetgateway')]"
+        },
+        "connectionType": "Vnet2Vnet",
+        "routingWeight": 0,
+        "sharedKey": "[variables('sharedKey')]"
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "name": "northeurope-to-westeurope-connection",
+      "type": "Microsoft.Network/connections",
+      "location": "northeurope",
+      "dependsOn": [
+        "Microsoft.Network/virtualNetworkGateways/westeurope-vnetgateway",
+        "Microsoft.Network/virtualNetworkGateways/northeurope-vnetgateway"
+      ],
+      "properties": {
+        "virtualNetworkGateway1": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', 'northeurope-vnetgateway')]"
+        },
+        "virtualNetworkGateway2": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', 'westeurope-vnetgateway')]"
+        },
+        "connectionType": "Vnet2Vnet",
+        "routingWeight": 0,
+        "sharedKey": "[variables('sharedKey')]"
+      }
+    }
+    
+  ]
+}

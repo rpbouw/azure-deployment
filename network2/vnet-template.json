@@ -1,0 +1,122 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "addressPrefix": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "vnetAddressPrefix": "[concat(parameters('addressPrefix'),'0/25')]",
+    "BebSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'0/27')]",
+    "CassandraSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'32/27')]",
+    "ElasticsearchSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'64/27')]",
+    "GlueSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'96/28')]",
+    "GatewaySubnetAddressPrefix": "[concat(parameters('addressPrefix'),'112/29')]",
+    "OperationsSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'120/29')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[concat(parameters('location'),'-nsg')]",
+      "apiVersion": "2016-03-30",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[concat(parameters('location'),'-operations-nsg')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-ssh",
+            "properties": {
+              "priority": 1000,
+              "sourceAddressPrefix": "*",
+              "protocol": "TCP",
+              "destinationPortRange": "22",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2016-06-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[concat(parameters('location'),'-vnet')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
+      ],
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": ["[variables('vnetAddressPrefix')]"]
+        },
+        "subnets": [
+          {
+            "name": "BebSubnet",
+            "properties": {
+              "addressPrefix": "[variables('BebSubnetAddressPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
+              }
+            }
+          },
+          {
+            "name": "CassandraSubnet",
+            "properties": {
+              "addressPrefix": "[variables('CassandraSubnetAddressPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
+              }
+            }
+          },
+          {
+            "name": "ElasticsearchSubnet",
+            "properties": {
+              "addressPrefix": "[variables('ElasticsearchSubnetAddressPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
+              }
+            }
+          },
+          {
+            "name": "GlueSubnet",
+            "properties": {
+              "addressPrefix": "[variables('GlueSubnetAddressPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-nsg'))]"
+              }
+            }
+          },
+          {
+            "name": "OperationsSubnet",
+            "properties": {
+              "addressPrefix": "[variables('OperationsSubnetAddressPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('location'),'-operations-nsg'))]"
+              }
+            }
+          },
+          {
+            "name": "GatewaySubnet",
+            "properties": {
+              "addressPrefix": "[variables('GatewaySubnetAddressPrefix')]",
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
