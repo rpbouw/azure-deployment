@@ -95,34 +95,40 @@
       "metadata": {
         "description": "Odd numbers will be deployed in westeurope, even numbers in northeurope."
       }
+    },
+    "appName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name to use for creating the machine and other resources."
+      }
     }
   },
   "variables": {
     "locations": ["northeurope","westeurope"],
     "location": "[variables('locations')[mod(parameters('vmNumber'),2)]]",    
-    "armApiVersion": "2016-09-01",
+    "armApiVersion": "2016-03-30",
     "artifactsLocation": "https://raw.githubusercontent.com/rpbouw/azure-deployment/master/",
     "vmStorageAccountContainerName": "disks",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id, variables('location')),'bebstub')]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id, variables('location')), parameters('appName'))]",
     "storageAccountType": "Standard_LRS",
     "vmimage": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
       "sku": "16.04.0-LTS"
     },
-    "vmName": "[concat('das-bebstub',parameters('vmNumber'))]",
+    "vmName": "[concat('das-', parameters('appName'), '-', parameters('vmNumber'))]",
     "vmSize": "[parameters('nodeSize')]",
     "vnetID": "[resourceId(parameters('networkResourceGroup'),'Microsoft.Network/virtualNetworks',concat(variables('location'),'-vnet'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/','GlueSubnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(variables('vmName'),'-nic')]",
-    "installationScript": "azuredeploy-bebstub-node.sh",
+    "installationScript": "azuredeploy-glue-node.sh",
     "installationCLI": "[concat('bash ',variables('installationScript'))]",
     "diskCaching": "ReadWrite"
   },
   "resources": [
     {
-      "apiVersion": "2016-05-01",
+      "apiVersion": "2016-01-01",
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
       "location": "[variables('location')]",

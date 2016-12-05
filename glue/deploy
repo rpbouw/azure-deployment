@@ -1,0 +1,15 @@
+if [ $# != 1 ]; then
+  echo "Usage: $0 appName"
+  exit 1
+fi
+
+appName=$1
+sed s/"\"appName\": { \"value\": null }"/"\"appName\": { \"value\": \"$appName\" }"/g lazuredeploy-node.parameters.json >lazuredeploy-$appName-node.parameters.json
+
+azure account set RABO-D01-CloudDelivery
+azure group deployment create --template-file azuredeploy-node.json \
+    -e lazuredeploy-$appName-node.parameters.json \
+    -g RG-D01-APP-ONLINEDATASTORE-003 \
+    -n ${appName}NodeDeployment
+
+rm lazuredeploy-$appName-node.parameters.json
