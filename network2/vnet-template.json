@@ -13,10 +13,10 @@
     "vnetAddressPrefix": "[concat(parameters('addressPrefix'),'0/25')]",
     "BebSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'0/27')]",
     "CassandraSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'32/27')]",
-    "ElasticsearchSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'64/27')]",
+    "ElasticsearchSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'64/28')]",
     "GlueSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'96/28')]",
-    "GatewaySubnetAddressPrefix": "[concat(parameters('addressPrefix'),'112/29')]",
-    "OperationsSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'120/29')]"
+    "GatewaySubnetAddressPrefix": "[concat(parameters('addressPrefix'),'120/29')]",
+    "OperationsSubnetAddressPrefix": "[concat(parameters('addressPrefix'),'80/28')]"
   },
   "resources": [
     {
