@@ -5,7 +5,7 @@ fi
 
 VM=das-cas$1
 
-azure account set RABO-D51-CloudDelivery
+azure account set RABO-D51-CloudDelivery-Unmanaged
 
 azure vm delete -g RG-D51-APP-ONLINEDATASTORE-002 -q $VM
 azure network nic delete -g RG-D51-APP-ONLINEDATASTORE-002 -q $VM-nic

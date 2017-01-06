@@ -1,5 +1,5 @@
 # DEV environment
-azure account set RABO-D51-CloudDelivery
+azure account set RABO-D51-CloudDelivery-Unmanaged
 RG_NETWORK=RG-D51-APP-ONLINEDATASTORE-003
 SHARED_KEY=osaidu2j2j2k33lk488dajsadndazxqw328909754jjkkdndckdkododjsjnqazxsfjngtb7363m
 

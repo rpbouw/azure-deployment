@@ -1,5 +1,5 @@
 # DEV environment
-azure account set RABO-D51-CloudDelivery
+azure account set RABO-D51-CloudDelivery-Unmanaged
 
 # network is defined in glue resource group
 
