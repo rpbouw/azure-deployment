@@ -5,10 +5,10 @@ fi
 
 VM=das-cas$1
 
-azure account set RABO-D01-CloudDelivery
+azure account set RABO-D51-CloudDelivery
 
-azure vm delete -g RG-D01-APP-ONLINEDATASTORE-002 -q $VM
-azure network nic delete -g RG-D01-APP-ONLINEDATASTORE-002 -q $VM-nic
+azure vm delete -g RG-D51-APP-ONLINEDATASTORE-002 -q $VM
+azure network nic delete -g RG-D51-APP-ONLINEDATASTORE-002 -q $VM-nic
 
 #to be detailed:
 #determine container, connection and key

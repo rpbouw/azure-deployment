@@ -6,10 +6,10 @@ fi
 vmNumber=$1
 sed s/"\"vmNumber\": { \"value\": 1 }"/"\"vmNumber\": { \"value\": $vmNumber }"/g lazuredeploy-generator-node.parameters.json >lazuredeploy-generator-node.parameters.$vmNumber.json
 
-azure account set RABO-D01-CloudDelivery
+azure account set RABO-D51-CloudDelivery
 azure group deployment create --template-file azuredeploy-generator-node.json \
     -e lazuredeploy-generator-node.parameters.$vmNumber.json \
-    -g RG-D01-APP-ONLINEDATASTORE-002 \
+    -g RG-D51-APP-ONLINEDATASTORE-002 \
     -n GeneratorNodeDeployment$vmNumber
 
 rm lazuredeploy-generator-node.parameters.$vmNumber.json

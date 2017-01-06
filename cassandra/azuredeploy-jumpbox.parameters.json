@@ -9,7 +9,7 @@
       "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNTz1JvKG7FAYuEIMYOmMufibl0a4fYPQjZ9qx3AYe4RagJxuWZheu7Cw599YfPe3oq2hZkBjcGbU/NVAVKEpkkFeWUEp4sP0vd3rlC4/BMsll+QIAzC9URnlsaOYmbZkl9NRxf1aC4/TWzNuydztSsHSJQW+NP3jpIBS1QhLKKtFhNtXQN38GPdNIjWyyvO8L6sEQHXNjCQpLMyWYEcspImaABgi0wWvZtDOB/IQ7wr2jno5YIS5LosCzHJBrWtWGvbIgJPDGyByI++QP40yaC33BOjN/Xo/mArauvc4bcWq+da/PgbRmasg2JagAZVvYrB6q8a+1QXff5OGCHXWj"
     },
     "networkResourceGroup": {
-      "value": "RG-D01-APP-ONLINEDATASTORE-003"
+      "value": "RG-D51-APP-ONLINEDATASTORE-003"
     }
   }
 }
