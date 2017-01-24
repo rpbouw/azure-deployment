@@ -20,3 +20,4 @@ DEBIAN_FRONTEND=noninteractive apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get purge -y openjdk-\*
 DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk
 
+DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
